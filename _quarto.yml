@@ -1,0 +1,36 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Evan Pai"
+  description: "Personal website and data science portfolio of Evan Pai, MDS student at the University of British Columbia."
+  site-url: https://evanpai.github.io
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: about.qmd
+        text: About
+      - href: blog.qmd
+        text: Blog
+      - href: projects.qmd
+        text: Projects
+    right:
+      - icon: github
+        href: https://github.com/EvanPai
+        aria-label: GitHub
+  page-footer:
+    left: "© 2026 Evan Pai"
+    right: "Built with [Quarto](https://quarto.org)"
+  open-graph: true
+
+format:
+  html:
+    theme: litera
+    css: styles.css
+    toc: true
+    toc-title: "On this page"
+    anchor-sections: true
+    smooth-scroll: true
+    link-external-newwindow: true

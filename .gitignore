@@ -1,0 +1,14 @@
+# Quarto build cache and stray output
+/.quarto/
+/_site/
+**/*.quarto_ipynb
+
+# macOS
+.DS_Store
+
+# Editor / environment
+.Rproj.user/
+.Rhistory
+.ipynb_checkpoints/
+__pycache__/
+.env

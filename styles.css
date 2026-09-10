@@ -1,0 +1,156 @@
+/* ==========================================================================
+   Evan Pai — personal site
+   Custom styling layered on top of the Quarto "litera" Bootstrap theme.
+   ========================================================================== */
+
+:root {
+  --ep-ink: #1f2a30;
+  --ep-muted: #5f6f78;
+  --ep-accent: #2f4858;
+  --ep-rule: #e0e2e0;
+  --ep-serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+}
+
+/* --- Typography -------------------------------------------------------- */
+
+body {
+  color: var(--ep-ink);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+h1, h2, h3, h4,
+.navbar-brand,
+.quarto-title-banner .title {
+  font-family: var(--ep-serif);
+  letter-spacing: -0.01em;
+  color: var(--ep-accent);
+}
+
+/* Keep body copy at a readable measure rather than the full column width. */
+main p,
+main ul,
+main ol,
+main blockquote {
+  max-width: 68ch;
+}
+
+.subtitle {
+  color: var(--ep-muted);
+  font-style: italic;
+}
+
+/* Section headings get a hairline rule, which reads as academic without
+   turning into a boxed-in look. */
+main h2 {
+  margin-top: 2.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--ep-rule);
+}
+
+/* --- Links ------------------------------------------------------------- */
+
+main a {
+  color: var(--ep-accent);
+  text-decoration-color: rgba(47, 72, 88, 0.35);
+  text-underline-offset: 0.18em;
+}
+
+main a:hover {
+  text-decoration-color: var(--ep-accent);
+}
+
+/* --- Navbar ------------------------------------------------------------ */
+
+.navbar {
+  border-bottom: 1px solid var(--ep-rule);
+}
+
+.navbar-brand {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* --- Home page (Quarto about / trestles layout) ------------------------ */
+
+.quarto-about-trestles .about-entity .about-image {
+  box-shadow: 0 2px 14px rgba(31, 42, 48, 0.14);
+}
+
+.quarto-about-trestles .about-entity .about-link {
+  border: 1px solid var(--ep-rule);
+  color: var(--ep-accent);
+}
+
+.quarto-about-trestles .about-entity .about-link:hover {
+  background-color: var(--ep-accent);
+  border-color: var(--ep-accent);
+  color: #fff;
+}
+
+/* The home page has no h1 of its own once the about layout takes over, so
+   pull the first section heading in a little. */
+.quarto-about-trestles main h2:first-of-type {
+  margin-top: 1.2rem;
+}
+
+/* --- Figures ----------------------------------------------------------- */
+
+figure {
+  margin: 2rem 0;
+}
+
+figure img,
+main > p > img {
+  border-radius: 3px;
+  box-shadow: 0 1px 10px rgba(31, 42, 48, 0.12);
+}
+
+figcaption,
+.figure-caption {
+  color: var(--ep-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+  padding-top: 0.5rem;
+}
+
+/* --- Blog listing ------------------------------------------------------ */
+
+.quarto-listing {
+  margin-top: 1.5rem;
+}
+
+.quarto-listing-default .listing-item {
+  border-bottom: 1px solid var(--ep-rule);
+  padding-bottom: 1.4rem;
+}
+
+.listing-title {
+  font-family: var(--ep-serif);
+}
+
+.listing-date,
+.listing-reading-time {
+  color: var(--ep-muted);
+  font-size: 0.9rem;
+}
+
+/* --- Footer ------------------------------------------------------------ */
+
+.nav-footer {
+  border-top: 1px solid var(--ep-rule);
+  color: var(--ep-muted);
+  font-size: 0.9rem;
+}
+
+/* --- Small screens ----------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+  body {
+    font-size: 1rem;
+  }
+
+  main h2 {
+    margin-top: 2rem;
+  }
+}
