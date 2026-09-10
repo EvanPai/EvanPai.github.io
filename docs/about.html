@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>About – Evan Pai</title>
+<title>About – Chen-An (Evan) Pai</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -77,9 +77,9 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="About – Evan Pai">
+<meta property="og:title" content="About – Chen-An (Evan) Pai">
 <meta property="og:description" content="A longer introduction">
-<meta property="og:site_name" content="Evan Pai">
+<meta property="og:site_name" content="Chen-An (Evan) Pai">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -90,7 +90,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">Evan Pai</span>
+    <span class="navbar-title">Chen-An (Evan) Pai</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -122,6 +122,11 @@ ul.task-list li input[type="checkbox"] {
 </i> 
 <span class="menu-text"></span></a>
   </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/evanpai/"> <i class="bi bi-linkedin" role="img" aria-label="LinkedIn">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -140,6 +145,8 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
   <li><a href="#why-data-science" id="toc-why-data-science" class="nav-link" data-scroll-target="#why-data-science">Why data science</a></li>
+  <li><a href="#competitions" id="toc-competitions" class="nav-link" data-scroll-target="#competitions">Competitions</a></li>
+  <li><a href="#publication" id="toc-publication" class="nav-link" data-scroll-target="#publication">Publication</a></li>
   <li><a href="#what-i-work-with" id="toc-what-i-work-with" class="nav-link" data-scroll-target="#what-i-work-with">What I work with</a></li>
   <li><a href="#where-i-am-headed" id="toc-where-i-am-headed" class="nav-link" data-scroll-target="#where-i-am-headed">Where I am headed</a></li>
   <li><a href="#outside-of-data-science" id="toc-outside-of-data-science" class="nav-link" data-scroll-target="#outside-of-data-science">Outside of data science</a></li>
@@ -172,37 +179,82 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>I trained as a computer scientist before coming to MDS, studying computer science at National Tsing Hua University in Taiwan. Most of my degree was spent on the software side of things — algorithms, systems, and enough coursework in machine learning to know that I liked it and did not yet understand it properly.</p>
-<p>What I took away was a habit more than a subject: build the thing, run it, and let the result tell you whether you were right. That habit turned out to transfer directly to data science, where the temptation to trust a number you have not checked is considerably stronger.</p>
+<p>I grew up and studied in Taiwan, and finished a Bachelor of Computer Science at <strong>National Tsing Hua University</strong> in July 2025, graduating with a 3.97 GPA and ranked 43rd of 183 in my class.</p>
+<p>My degree pulled me steadily toward the systems end of machine learning. Between 2023 and 2025 I was a teaching assistant for four NTHU courses — Operating Systems, Parallel Programming, and both the fundamental and advanced High Performance Computing Cluster Practice courses — which meant two years of explaining schedulers, MPI, and GPU clusters to people who had not seen them before. Teaching a thing is still the fastest way I know to find out whether I actually understand it.</p>
+<p>Alongside that I interned as a <strong>Data Scientist at IBM</strong> in Taipei and as a <strong>Software Engineer at the National Center for High-performance Computing</strong>, where I built a data re-uploading classifier using quantum machine learning methods in PennyLane.</p>
 </section>
 <section id="why-data-science" class="level2">
 <h2 class="anchored" data-anchor-id="why-data-science">Why data science</h2>
-<p>The turning point was noticing how often the hard part of a technical problem was not the code. A model would train and report a number, and the real question — does this number mean what we think it means, and would it hold up on next month’s data — was the one nobody had the tools to answer.</p>
-<p>That is what MDS is for me: filling in the statistical half of a problem I had only been solving from the engineering side. Experiment design, inference, and knowing when a result is genuinely there rather than an artifact of how the data was collected.</p>
+<p>Most of my work has been on the engineering side of a model: how fast it runs, how many GPUs it needs, how to squeeze another 3× out of the inference path. That is satisfying, and it is only half the problem.</p>
+<p>The other half kept showing up as a question I could not answer properly. A benchmark improves — is the improvement real, or an artifact of how it was measured? A model reports an accuracy — would it hold on next month’s data? During the SC24 Reproducibility Challenge my team reproduced the findings of the <em>DataLife</em> paper on the 1000 Genomes Project, and that experience made the gap obvious: I had strong intuitions about systems and weak ones about evidence.</p>
+<p>MDS is me closing that gap deliberately — statistics, inference, and experiment design, taught properly rather than picked up in passing.</p>
+</section>
+<section id="competitions" class="level2">
+<h2 class="anchored" data-anchor-id="competitions">Competitions</h2>
+<p>International student cluster competitions were the centre of my undergraduate years. Each one is a few days of running real scientific and AI workloads on a cluster you have tuned yourself, against teams from around the world.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Competition</th>
+<th>Result</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SC24 Student Cluster Competition</td>
+<td><strong>3rd place</strong></td>
+<td>Atlanta, US · Nov 2024</td>
+</tr>
+<tr class="even">
+<td>ISC High Performance SCC 2024</td>
+<td><strong>2nd place</strong></td>
+<td>Hamburg, Germany · May 2024</td>
+</tr>
+<tr class="odd">
+<td>APAC HPC-AI Competition 2023</td>
+<td><strong>1st place</strong></td>
+<td>Sydney, Australia · Feb 2024</td>
+</tr>
+<tr class="even">
+<td>High Performance Application Competition 2023</td>
+<td><strong>2nd place</strong></td>
+<td>Hsinchu, Taiwan · Aug 2023</td>
+</tr>
+</tbody>
+</table>
+<p>The technical write-ups are on the <a href="./projects.html">projects page</a>.</p>
+</section>
+<section id="publication" class="level2">
+<h2 class="anchored" data-anchor-id="publication">Publication</h2>
+<p>C.-A. Pai <em>et al.</em>, “Critique of <em>Data Flow Lifecycles for Optimizing Workflow Coordination</em>,” by the SCC Team from National Tsing Hua University. <em>IEEE Transactions on Parallel and Distributed Systems</em> (TPDS), in press. DOI: <a href="https://doi.org/10.1109/TPDS.2025.3627428">10.1109/TPDS.2025.3627428</a></p>
 </section>
 <section id="what-i-work-with" class="level2">
 <h2 class="anchored" data-anchor-id="what-i-work-with">What I work with</h2>
-<ul>
-<li><strong>Languages</strong> — Python, R, SQL</li>
-<li><strong>Tooling</strong> — Git and GitHub, the Unix shell, Quarto, Jupyter, conda</li>
-<li><strong>Areas</strong> — machine learning, statistical inference, data visualization, reproducible workflows</li>
-</ul>
-<p>This list is going to change over the year. I would rather it reflect what I have actually used than what I have heard of, so I update it as the program goes.</p>
+<p><strong>Languages</strong> — Python, C/C++, R, SQL, shell scripting</p>
+<p><strong>AI and LLM systems</strong> — PyTorch, TensorFlow, HuggingFace, vLLM, DeepSpeed, TensorRT, inference optimization, transformer architectures, RAG, MLOps</p>
+<p><strong>HPC and GPU</strong> — CUDA, NCCL, MPI, OpenMP, parallel programming, cluster management, performance profiling with Nsight and nvprof</p>
+<p><strong>Tooling</strong> — Linux, Git, Docker, Quarto, Jupyter, conda</p>
+<p>R, SQL, and the statistical side of this list are the newest parts, and they are what MDS is adding. I update this section as the program goes rather than listing things I have only read about.</p>
 </section>
 <section id="where-i-am-headed" class="level2">
 <h2 class="anchored" data-anchor-id="where-i-am-headed">Where I am headed</h2>
-<p>I am aiming for a <strong>machine learning engineer</strong> or <strong>data scientist</strong> role after MDS. The work I want is the kind where the same person frames the question, builds the model, and is still around when it goes to production — my background is a reasonable fit for that, and MDS is filling in the part I was missing.</p>
+<p>I am looking for <strong>machine learning engineer</strong> or <strong>data scientist</strong> roles after MDS — ideally somewhere the same person gets to frame the question, build the model, and still be around when it goes to production. My background covers the last part well; MDS is what makes me credible on the first two.</p>
 </section>
 <section id="outside-of-data-science" class="level2">
 <h2 class="anchored" data-anchor-id="outside-of-data-science">Outside of data science</h2>
-<p>Vancouver has been an adjustment in the best way. Coming from Taiwan, the scale of the mountains sitting at the end of the street still catches me off guard, and I have been using weekends to get out into them.</p>
-<!-- TODO: replace this paragraph with your own hobbies — sports, music, food,
-     photography, games, whatever you actually do on a weekend. Two or three
-     sentences is plenty, and it is usually the part people remember. -->
+<!-- TODO: 換成你自己的內容 —— 運動、音樂、吃的、遊戲、攝影、週末都在幹嘛。
+     兩三句就夠，這通常是別人最記得的一段。 -->
+<p>Moving from Hsinchu to Vancouver has been an adjustment in the best way — the mountains sitting at the end of the street still catch me off guard, and I have been using weekends to get out into them.</p>
 </section>
 <section id="get-in-touch" class="level2">
 <h2 class="anchored" data-anchor-id="get-in-touch">Get in touch</h2>
-<p>The fastest way to reach me is <a href="mailto:evan105pai@gmail.com">email</a>, and my code lives on <a href="https://github.com/EvanPai">GitHub</a>.</p>
+<p>The fastest way to reach me is <a href="mailto:evan105pai@gmail.com">email</a>. I am also on <a href="https://www.linkedin.com/in/evanpai/">LinkedIn</a> and <a href="https://github.com/EvanPai">GitHub</a>.</p>
 
 
 </section>
@@ -617,7 +669,7 @@ ul.task-list li input[type="checkbox"] {
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-<p>© 2026 Evan Pai</p>
+<p>© 2026 Chen-An (Evan) Pai</p>
 </div>   
     <div class="nav-footer-center">
       &nbsp;

@@ -4,97 +4,146 @@
     "href": "blog.html",
     "title": "Blog",
     "section": "",
-    "text": "My first weeks in MDS\n\n\n\nMDS\n\nreflections\n\n\n\nOrientation, the first week of classes, and what actually surprised me about the pace.\n\n\n\n\n\nSep 9, 2026\n\n2 min\n\n\n\n\nNo matching items"
+    "text": "My first weeks in MDS\n\n\n\nMDS\n\nreflections\n\n\n\nComing from GPU clusters to statistics, and what actually surprised me about the pace.\n\n\n\n\n\nSep 9, 2026\n\n2 min\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Evan Pai",
+    "title": "Chen-An (Evan) Pai",
     "section": "",
-    "text": "I am a Master of Data Science student at the University of British Columbia in Vancouver. I came to MDS from a computer science background, where I spent most of my time writing software and found that the questions I kept coming back to were about the data underneath it: what it can support, what it cannot, and how much of a conclusion is really there.\nMDS is where I am turning that interest into a discipline — statistics and experiment design alongside the engineering I already enjoy. I am most drawn to the place where the two meet: models that are statistically honest and survive contact with production.\nAfter graduating I am looking for work as a machine learning engineer or data scientist, ideally somewhere the same person gets to frame the question, build the model, and ship it.\nThis site is where I keep my coursework, projects, and notes as I go. There is more about me on the about page, and what I have been working on lately is on the blog."
+    "text": "I am a Master of Data Science student at the University of British Columbia. I came here from computer science at National Tsing Hua University in Taiwan, where I spent most of my degree on the systems side of machine learning — making large models run faster on GPU clusters, and teaching other students how to do the same.\nThat work took me to three international student cluster competitions. My teams placed 3rd at SC24 in Atlanta, 2nd at ISC 2024 in Hamburg, and 1st at the 2023 APAC HPC-AI Competition, on problems ranging from MLPerf Stable Diffusion benchmarking to an 11.4× speedup on BLOOM inference. Somewhere in the middle of optimizing other people’s models, I got curious about the models themselves — and about how much of a reported result is real.\nMDS is the other half of that education. I already know how to make a model run; I came here to learn how to tell whether it should be trusted. I am looking for machine learning engineer and data scientist roles where both halves matter.\nMore detail is on the about page, my work is on projects, and I write about the program on the blog."
   },
   {
     "objectID": "index.html#hello",
     "href": "index.html#hello",
-    "title": "Evan Pai",
+    "title": "Chen-An (Evan) Pai",
     "section": "",
-    "text": "I am a Master of Data Science student at the University of British Columbia in Vancouver. I came to MDS from a computer science background, where I spent most of my time writing software and found that the questions I kept coming back to were about the data underneath it: what it can support, what it cannot, and how much of a conclusion is really there.\nMDS is where I am turning that interest into a discipline — statistics and experiment design alongside the engineering I already enjoy. I am most drawn to the place where the two meet: models that are statistically honest and survive contact with production.\nAfter graduating I am looking for work as a machine learning engineer or data scientist, ideally somewhere the same person gets to frame the question, build the model, and ship it.\nThis site is where I keep my coursework, projects, and notes as I go. There is more about me on the about page, and what I have been working on lately is on the blog."
+    "text": "I am a Master of Data Science student at the University of British Columbia. I came here from computer science at National Tsing Hua University in Taiwan, where I spent most of my degree on the systems side of machine learning — making large models run faster on GPU clusters, and teaching other students how to do the same.\nThat work took me to three international student cluster competitions. My teams placed 3rd at SC24 in Atlanta, 2nd at ISC 2024 in Hamburg, and 1st at the 2023 APAC HPC-AI Competition, on problems ranging from MLPerf Stable Diffusion benchmarking to an 11.4× speedup on BLOOM inference. Somewhere in the middle of optimizing other people’s models, I got curious about the models themselves — and about how much of a reported result is real.\nMDS is the other half of that education. I already know how to make a model run; I came here to learn how to tell whether it should be trusted. I am looking for machine learning engineer and data scientist roles where both halves matter.\nMore detail is on the about page, my work is on projects, and I write about the program on the blog."
   },
   {
     "objectID": "posts/first-weeks/index.html",
     "href": "posts/first-weeks/index.html",
     "title": "My first weeks in MDS",
     "section": "",
-    "text": "Orientation week was mostly logistics — accounts, laptops, a room full of people introducing themselves — but the part that stuck with me was how quickly the cohort stopped being strangers. Everyone had arrived from somewhere different: economics, biology, engineering, a few people coming back after years of work. I had half expected a room of computer science graduates like me, and instead spent the week being reminded that most of the interesting questions in this field come from somewhere other than the code.\nThen classes started, and the pace was the real surprise. I knew MDS was compressed; I had not internalised what a block schedule feels like from the inside. A topic is introduced, you use it in a lab two days later, and by the following week it is assumed knowledge. The instinct I brought from my undergraduate degree — read everything first, then start — stopped working almost immediately. What replaced it was starting before I felt ready and letting the gaps show up in the error messages.\nA few weeks in, I have settled somewhere between overwhelmed and genuinely enjoying it. The tooling side has been the easiest to love: Git, the shell, and Quarto have already replaced a pile of habits I did not realise were slowing me down, and this site is a direct result of that. The statistics is where I am working hardest, which is exactly why I came. Ask me again after the first round of quizzes.\n\n\n\nVancouver from campus during my first week at UBC."
+    "text": "Orientation week was mostly logistics — accounts, laptops, a room full of people introducing themselves — but the part that stuck with me was how quickly the cohort stopped being strangers. Everyone had arrived from somewhere different: economics, biology, public health, a few people coming back after years of work. I had half expected a room of computer science graduates like me, and instead spent the week being reminded that most of the interesting questions in this field arrive from somewhere other than the code.\nThen classes started, and the pace was the real surprise. I knew MDS was compressed; I had not internalised what a block schedule feels like from the inside. A topic is introduced, you use it in a lab two days later, and by the following week it is assumed knowledge. Coming from a background where I would spend a week profiling a single application before changing anything, the instinct to understand a thing completely before starting stopped working almost immediately. What replaced it was starting before I felt ready and letting the gaps show up in the error messages.\nA few weeks in, I have settled somewhere between overwhelmed and genuinely enjoying it. The tooling has been the easiest part to love — Git and the shell I already knew from cluster work, and Quarto has quietly replaced a pile of habits I did not realise were slowing me down; this site is a direct result. The statistics is where I am working hardest, and that is exactly why I came. I spent my undergraduate years making models run faster without being able to say much about whether their results deserved the compute. That is the gap I am here to close. Ask me again after the first round of quizzes.\n\n\n\nVancouver from campus during my first week at UBC."
   },
   {
     "objectID": "projects.html",
     "href": "projects.html",
     "title": "Projects",
     "section": "",
-    "text": "This page collects work I want to be able to point someone at. It is deliberately short — a few things explained properly beats a long list."
+    "text": "A few things explained properly, rather than a long list. Most of this work was done on GPU clusters, either for international student cluster competitions or as research and internship work."
   },
   {
-    "objectID": "projects.html#personal-website-and-portfolio",
-    "href": "projects.html#personal-website-and-portfolio",
+    "objectID": "projects.html#local-llm-deployment-and-inference-optimization",
+    "href": "projects.html#local-llm-deployment-and-inference-optimization",
     "title": "Projects",
-    "section": "Personal website and portfolio",
-    "text": "Personal website and portfolio\nThe problem. I needed somewhere to put coursework and projects that was not a folder on my laptop, and that a recruiter could open in one click.\nWhat I did. Built this site as a Quarto project, published it with GitHub Pages from the docs/ folder, and set it up so a new post is a new folder and a quarto render away.\nOutcome. A site I can extend every week for the rest of MDS without touching the plumbing again.\nSource on GitHub"
+    "section": "Local LLM deployment and inference optimization",
+    "text": "Local LLM deployment and inference optimization\nThe problem. Running a 70-billion-parameter model as an interactive chatbot is a throughput problem, not a modelling one. Naive serving leaves most of the GPU idle between requests.\nWhat I did. Built an end-to-end local chatbot around LLaMA 3.1 70B, served with vLLM behind a Gradio front end on 4 NVIDIA H100 GPUs, then worked through the inference path — continuous batching, kernel-level tuning, and memory layout.\nOutcome. 3× throughput increase over the baseline deployment, with the whole system running locally rather than against a hosted API.\nLLaMA 3.1 · vLLM · Gradio · CUDA · 4× H100"
   },
   {
-    "objectID": "projects.html#coming-soon",
-    "href": "projects.html#coming-soon",
+    "objectID": "projects.html#sc24-student-cluster-competition-3rd-place",
+    "href": "projects.html#sc24-student-cluster-competition-3rd-place",
     "title": "Projects",
-    "section": "Coming soon",
-    "text": "Coming soon\nMore projects will land here as MDS goes on — the course work covering machine learning, statistical inference, and data visualization all produces something worth writing up."
+    "section": "SC24 Student Cluster Competition — 3rd place",
+    "text": "SC24 Student Cluster Competition — 3rd place\nAtlanta, US · November 2024 · the leading global HPC-AI student competition\nThree tasks over four days, on a cluster we configured and tuned ourselves:\n\nMLPerf benchmarking. Optimized Stable Diffusion for MLPerf on 4 NVIDIA H100 GPUs using TensorRT, tuning precision and kernel selection against the benchmark’s accuracy constraints.\nMystery application — cat object detection. Trained YOLO11x for a same-day object detection challenge, placing 3rd in that task.\nReproducibility challenge. Reproduced the findings of the DataLife paper on the 1000 Genomes Project — the task that did the most to convince me I wanted the statistical half of this education.\n\nThe reproducibility work became a peer-reviewed critique, now in press at IEEE TPDS (DOI: 10.1109/TPDS.2025.3627428).\nTensorRT · Stable Diffusion · YOLO11x · MLPerf · reproducibility"
+  },
+  {
+    "objectID": "projects.html#isc-high-performance-scc-2024-2nd-place",
+    "href": "projects.html#isc-high-performance-scc-2024-2nd-place",
+    "title": "Projects",
+    "section": "ISC High Performance SCC 2024 — 2nd place",
+    "text": "ISC High Performance SCC 2024 — 2nd place\nHamburg, Germany · May 2024 · one of the top three global supercomputing competitions\nThe problem. Take Neko, a spectral-element CFD application, and make it run as fast as possible on a 10 × NVIDIA H100 cluster within a fixed power budget.\nWhat I did. Profiled the solver to find where the time actually went, then worked on parallel decomposition, communication patterns, and system-level tuning rather than guessing at compiler flags.\nOutcome. 18.5× speedup over the starting configuration, and 2nd place overall.\nCFD · parallel programming · MPI/NCCL · profiling · 10× H100"
+  },
+  {
+    "objectID": "projects.html#apac-hpc-ai-competition-2023-1st-place",
+    "href": "projects.html#apac-hpc-ai-competition-2023-1st-place",
+    "title": "Projects",
+    "section": "APAC HPC-AI Competition 2023 — 1st place",
+    "text": "APAC HPC-AI Competition 2023 — 1st place\nSydney, Australia · February 2024 · against 21 teams from 17 universities\nThe problem. Optimize inference for the BLOOM large language model across a multi-GPU cluster.\nWhat I did. Combined tensor parallelism, DeepSpeed inference optimization, and NVIDIA NCCL collective tuning, measuring each change instead of stacking them and hoping.\nOutcome. 11.4× inference speedup, and first place overall.\nBLOOM · tensor parallelism · DeepSpeed · NCCL · LLM inference"
+  },
+  {
+    "objectID": "projects.html#fourcastnet-end-to-end-deployment-2nd-place",
+    "href": "projects.html#fourcastnet-end-to-end-deployment-2nd-place",
+    "title": "Projects",
+    "section": "FourCastNet end-to-end deployment — 2nd place",
+    "text": "FourCastNet end-to-end deployment — 2nd place\nHigh Performance Application Competition 2023 · Hsinchu, Taiwan · against 8 teams from 7 universities\nDeployed and ran FourCastNet, an AI-driven global climate model, end to end: environment setup, multi-node training, inference, and visualization. Less a single-technique problem than a test of whether you can carry a full AI workflow from a bare cluster to a finished result.\nFourCastNet · multi-node training · full-stack AI workflow"
+  },
+  {
+    "objectID": "projects.html#quantum-machine-learning-classifier",
+    "href": "projects.html#quantum-machine-learning-classifier",
+    "title": "Projects",
+    "section": "Quantum machine learning classifier",
+    "text": "Quantum machine learning classifier\nNational Center for High-performance Computing · Hsinchu, Taiwan · Summer 2023\nImplemented a data re-uploading classifier using quantum machine learning methods in PennyLane, as part of a summer software engineering internship at NCHC.\nPennyLane · QML · research"
+  },
+  {
+    "objectID": "projects.html#this-website",
+    "href": "projects.html#this-website",
+    "title": "Projects",
+    "section": "This website",
+    "text": "This website\nBuilt as a Quarto project and published with GitHub Pages from the docs/ folder, set up so that a new post is a new folder and one quarto render away. It is where my MDS coursework and projects will land over the coming year.\nSource on GitHub\nQuarto · GitHub Pages · Git"
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "I trained as a computer scientist before coming to MDS, studying computer science at National Tsing Hua University in Taiwan. Most of my degree was spent on the software side of things — algorithms, systems, and enough coursework in machine learning to know that I liked it and did not yet understand it properly.\nWhat I took away was a habit more than a subject: build the thing, run it, and let the result tell you whether you were right. That habit turned out to transfer directly to data science, where the temptation to trust a number you have not checked is considerably stronger."
+    "text": "I grew up and studied in Taiwan, and finished a Bachelor of Computer Science at National Tsing Hua University in July 2025, graduating with a 3.97 GPA and ranked 43rd of 183 in my class.\nMy degree pulled me steadily toward the systems end of machine learning. Between 2023 and 2025 I was a teaching assistant for four NTHU courses — Operating Systems, Parallel Programming, and both the fundamental and advanced High Performance Computing Cluster Practice courses — which meant two years of explaining schedulers, MPI, and GPU clusters to people who had not seen them before. Teaching a thing is still the fastest way I know to find out whether I actually understand it.\nAlongside that I interned as a Data Scientist at IBM in Taipei and as a Software Engineer at the National Center for High-performance Computing, where I built a data re-uploading classifier using quantum machine learning methods in PennyLane."
   },
   {
     "objectID": "about.html#background",
     "href": "about.html#background",
     "title": "About",
     "section": "",
-    "text": "I trained as a computer scientist before coming to MDS, studying computer science at National Tsing Hua University in Taiwan. Most of my degree was spent on the software side of things — algorithms, systems, and enough coursework in machine learning to know that I liked it and did not yet understand it properly.\nWhat I took away was a habit more than a subject: build the thing, run it, and let the result tell you whether you were right. That habit turned out to transfer directly to data science, where the temptation to trust a number you have not checked is considerably stronger."
+    "text": "I grew up and studied in Taiwan, and finished a Bachelor of Computer Science at National Tsing Hua University in July 2025, graduating with a 3.97 GPA and ranked 43rd of 183 in my class.\nMy degree pulled me steadily toward the systems end of machine learning. Between 2023 and 2025 I was a teaching assistant for four NTHU courses — Operating Systems, Parallel Programming, and both the fundamental and advanced High Performance Computing Cluster Practice courses — which meant two years of explaining schedulers, MPI, and GPU clusters to people who had not seen them before. Teaching a thing is still the fastest way I know to find out whether I actually understand it.\nAlongside that I interned as a Data Scientist at IBM in Taipei and as a Software Engineer at the National Center for High-performance Computing, where I built a data re-uploading classifier using quantum machine learning methods in PennyLane."
   },
   {
     "objectID": "about.html#why-data-science",
     "href": "about.html#why-data-science",
     "title": "About",
     "section": "Why data science",
-    "text": "Why data science\nThe turning point was noticing how often the hard part of a technical problem was not the code. A model would train and report a number, and the real question — does this number mean what we think it means, and would it hold up on next month’s data — was the one nobody had the tools to answer.\nThat is what MDS is for me: filling in the statistical half of a problem I had only been solving from the engineering side. Experiment design, inference, and knowing when a result is genuinely there rather than an artifact of how the data was collected."
+    "text": "Why data science\nMost of my work has been on the engineering side of a model: how fast it runs, how many GPUs it needs, how to squeeze another 3× out of the inference path. That is satisfying, and it is only half the problem.\nThe other half kept showing up as a question I could not answer properly. A benchmark improves — is the improvement real, or an artifact of how it was measured? A model reports an accuracy — would it hold on next month’s data? During the SC24 Reproducibility Challenge my team reproduced the findings of the DataLife paper on the 1000 Genomes Project, and that experience made the gap obvious: I had strong intuitions about systems and weak ones about evidence.\nMDS is me closing that gap deliberately — statistics, inference, and experiment design, taught properly rather than picked up in passing."
+  },
+  {
+    "objectID": "about.html#competitions",
+    "href": "about.html#competitions",
+    "title": "About",
+    "section": "Competitions",
+    "text": "Competitions\nInternational student cluster competitions were the centre of my undergraduate years. Each one is a few days of running real scientific and AI workloads on a cluster you have tuned yourself, against teams from around the world.\n\n\n\n\n\n\n\n\nCompetition\nResult\nWhere\n\n\n\n\nSC24 Student Cluster Competition\n3rd place\nAtlanta, US · Nov 2024\n\n\nISC High Performance SCC 2024\n2nd place\nHamburg, Germany · May 2024\n\n\nAPAC HPC-AI Competition 2023\n1st place\nSydney, Australia · Feb 2024\n\n\nHigh Performance Application Competition 2023\n2nd place\nHsinchu, Taiwan · Aug 2023\n\n\n\nThe technical write-ups are on the projects page."
+  },
+  {
+    "objectID": "about.html#publication",
+    "href": "about.html#publication",
+    "title": "About",
+    "section": "Publication",
+    "text": "Publication\nC.-A. Pai et al., “Critique of Data Flow Lifecycles for Optimizing Workflow Coordination,” by the SCC Team from National Tsing Hua University. IEEE Transactions on Parallel and Distributed Systems (TPDS), in press. DOI: 10.1109/TPDS.2025.3627428"
   },
   {
     "objectID": "about.html#what-i-work-with",
     "href": "about.html#what-i-work-with",
     "title": "About",
     "section": "What I work with",
-    "text": "What I work with\n\nLanguages — Python, R, SQL\nTooling — Git and GitHub, the Unix shell, Quarto, Jupyter, conda\nAreas — machine learning, statistical inference, data visualization, reproducible workflows\n\nThis list is going to change over the year. I would rather it reflect what I have actually used than what I have heard of, so I update it as the program goes."
+    "text": "What I work with\nLanguages — Python, C/C++, R, SQL, shell scripting\nAI and LLM systems — PyTorch, TensorFlow, HuggingFace, vLLM, DeepSpeed, TensorRT, inference optimization, transformer architectures, RAG, MLOps\nHPC and GPU — CUDA, NCCL, MPI, OpenMP, parallel programming, cluster management, performance profiling with Nsight and nvprof\nTooling — Linux, Git, Docker, Quarto, Jupyter, conda\nR, SQL, and the statistical side of this list are the newest parts, and they are what MDS is adding. I update this section as the program goes rather than listing things I have only read about."
   },
   {
     "objectID": "about.html#where-i-am-headed",
     "href": "about.html#where-i-am-headed",
     "title": "About",
     "section": "Where I am headed",
-    "text": "Where I am headed\nI am aiming for a machine learning engineer or data scientist role after MDS. The work I want is the kind where the same person frames the question, builds the model, and is still around when it goes to production — my background is a reasonable fit for that, and MDS is filling in the part I was missing."
+    "text": "Where I am headed\nI am looking for machine learning engineer or data scientist roles after MDS — ideally somewhere the same person gets to frame the question, build the model, and still be around when it goes to production. My background covers the last part well; MDS is what makes me credible on the first two."
   },
   {
     "objectID": "about.html#outside-of-data-science",
     "href": "about.html#outside-of-data-science",
     "title": "About",
     "section": "Outside of data science",
-    "text": "Outside of data science\nVancouver has been an adjustment in the best way. Coming from Taiwan, the scale of the mountains sitting at the end of the street still catches me off guard, and I have been using weekends to get out into them."
+    "text": "Outside of data science\n\nMoving from Hsinchu to Vancouver has been an adjustment in the best way — the mountains sitting at the end of the street still catch me off guard, and I have been using weekends to get out into them."
   },
   {
     "objectID": "about.html#get-in-touch",
     "href": "about.html#get-in-touch",
     "title": "About",
     "section": "Get in touch",
-    "text": "Get in touch\nThe fastest way to reach me is email, and my code lives on GitHub."
+    "text": "Get in touch\nThe fastest way to reach me is email. I am also on LinkedIn and GitHub."
   }
 ]

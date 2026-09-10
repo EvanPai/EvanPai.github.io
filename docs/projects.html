@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Projects – Evan Pai</title>
+<title>Projects – Chen-An (Evan) Pai</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -77,9 +77,9 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="Projects – Evan Pai">
-<meta property="og:description" content="Selected work">
-<meta property="og:site_name" content="Evan Pai">
+<meta property="og:title" content="Projects – Chen-An (Evan) Pai">
+<meta property="og:description" content="Selected work in AI systems, HPC, and data science">
+<meta property="og:site_name" content="Chen-An (Evan) Pai">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -90,7 +90,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">Evan Pai</span>
+    <span class="navbar-title">Chen-An (Evan) Pai</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -122,6 +122,11 @@ ul.task-list li input[type="checkbox"] {
 </i> 
 <span class="menu-text"></span></a>
   </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/evanpai/"> <i class="bi bi-linkedin" role="img" aria-label="LinkedIn">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -137,9 +142,14 @@ ul.task-list li input[type="checkbox"] {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
-  <ul>
-  <li><a href="#personal-website-and-portfolio" id="toc-personal-website-and-portfolio" class="nav-link active" data-scroll-target="#personal-website-and-portfolio">Personal website and portfolio</a></li>
-  <li><a href="#coming-soon" id="toc-coming-soon" class="nav-link" data-scroll-target="#coming-soon">Coming soon</a></li>
+  <ul class="collapse">
+  <li><a href="#local-llm-deployment-and-inference-optimization" id="toc-local-llm-deployment-and-inference-optimization" class="nav-link active" data-scroll-target="#local-llm-deployment-and-inference-optimization">Local LLM deployment and inference optimization</a></li>
+  <li><a href="#sc24-student-cluster-competition-3rd-place" id="toc-sc24-student-cluster-competition-3rd-place" class="nav-link" data-scroll-target="#sc24-student-cluster-competition-3rd-place">SC24 Student Cluster Competition — 3rd place</a></li>
+  <li><a href="#isc-high-performance-scc-2024-2nd-place" id="toc-isc-high-performance-scc-2024-2nd-place" class="nav-link" data-scroll-target="#isc-high-performance-scc-2024-2nd-place">ISC High Performance SCC 2024 — 2nd place</a></li>
+  <li><a href="#apac-hpc-ai-competition-2023-1st-place" id="toc-apac-hpc-ai-competition-2023-1st-place" class="nav-link" data-scroll-target="#apac-hpc-ai-competition-2023-1st-place">APAC HPC-AI Competition 2023 — 1st place</a></li>
+  <li><a href="#fourcastnet-end-to-end-deployment-2nd-place" id="toc-fourcastnet-end-to-end-deployment-2nd-place" class="nav-link" data-scroll-target="#fourcastnet-end-to-end-deployment-2nd-place">FourCastNet end-to-end deployment — 2nd place</a></li>
+  <li><a href="#quantum-machine-learning-classifier" id="toc-quantum-machine-learning-classifier" class="nav-link" data-scroll-target="#quantum-machine-learning-classifier">Quantum machine learning classifier</a></li>
+  <li><a href="#this-website" id="toc-this-website" class="nav-link" data-scroll-target="#this-website">This website</a></li>
   </ul>
 </nav>
     </div>
@@ -149,7 +159,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Projects</h1>
-<p class="subtitle lead">Selected work</p>
+<p class="subtitle lead">Selected work in AI systems, HPC, and data science</p>
 </div>
 
 
@@ -166,21 +176,65 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This page collects work I want to be able to point someone at. It is deliberately short — a few things explained properly beats a long list.</p>
-<!-- TODO: replace the entries below with your own projects. For each one, keep the
-     same four beats: what the problem was, what you did, what came out of it, and a
-     link. Delete any entry you do not have a real answer for. -->
-<section id="personal-website-and-portfolio" class="level2">
-<h2 class="anchored" data-anchor-id="personal-website-and-portfolio">Personal website and portfolio</h2>
-<p><strong>The problem.</strong> I needed somewhere to put coursework and projects that was not a folder on my laptop, and that a recruiter could open in one click.</p>
-<p><strong>What I did.</strong> Built this site as a <a href="https://quarto.org">Quarto</a> project, published it with GitHub Pages from the <code>docs/</code> folder, and set it up so a new post is a new folder and a <code>quarto render</code> away.</p>
-<p><strong>Outcome.</strong> A site I can extend every week for the rest of MDS without touching the plumbing again.</p>
-<p><a href="https://github.com/EvanPai/EvanPai.github.io">Source on GitHub</a></p>
+<p>A few things explained properly, rather than a long list. Most of this work was done on GPU clusters, either for international student cluster competitions or as research and internship work.</p>
+<section id="local-llm-deployment-and-inference-optimization" class="level2">
+<h2 class="anchored" data-anchor-id="local-llm-deployment-and-inference-optimization">Local LLM deployment and inference optimization</h2>
+<p><strong>The problem.</strong> Running a 70-billion-parameter model as an interactive chatbot is a throughput problem, not a modelling one. Naive serving leaves most of the GPU idle between requests.</p>
+<p><strong>What I did.</strong> Built an end-to-end local chatbot around <strong>LLaMA 3.1 70B</strong>, served with <strong>vLLM</strong> behind a <strong>Gradio</strong> front end on 4 NVIDIA H100 GPUs, then worked through the inference path — continuous batching, kernel-level tuning, and memory layout.</p>
+<p><strong>Outcome.</strong> <strong>3× throughput increase</strong> over the baseline deployment, with the whole system running locally rather than against a hosted API.</p>
+<p><code>LLaMA 3.1</code> · <code>vLLM</code> · <code>Gradio</code> · <code>CUDA</code> · <code>4× H100</code></p>
 <hr>
 </section>
-<section id="coming-soon" class="level2">
-<h2 class="anchored" data-anchor-id="coming-soon">Coming soon</h2>
-<p>More projects will land here as MDS goes on — the course work covering machine learning, statistical inference, and data visualization all produces something worth writing up.</p>
+<section id="sc24-student-cluster-competition-3rd-place" class="level2">
+<h2 class="anchored" data-anchor-id="sc24-student-cluster-competition-3rd-place">SC24 Student Cluster Competition — 3rd place</h2>
+<p><em>Atlanta, US · November 2024 · the leading global HPC-AI student competition</em></p>
+<p>Three tasks over four days, on a cluster we configured and tuned ourselves:</p>
+<ul>
+<li><strong>MLPerf benchmarking.</strong> Optimized <strong>Stable Diffusion</strong> for MLPerf on 4 NVIDIA H100 GPUs using <strong>TensorRT</strong>, tuning precision and kernel selection against the benchmark’s accuracy constraints.</li>
+<li><strong>Mystery application — cat object detection.</strong> Trained <strong>YOLO11x</strong> for a same-day object detection challenge, placing <strong>3rd</strong> in that task.</li>
+<li><strong>Reproducibility challenge.</strong> Reproduced the findings of the <em>DataLife</em> paper on the 1000 Genomes Project — the task that did the most to convince me I wanted the statistical half of this education.</li>
+</ul>
+<p>The reproducibility work became a peer-reviewed critique, now in press at IEEE TPDS (<a href="https://doi.org/10.1109/TPDS.2025.3627428">DOI: 10.1109/TPDS.2025.3627428</a>).</p>
+<p><code>TensorRT</code> · <code>Stable Diffusion</code> · <code>YOLO11x</code> · <code>MLPerf</code> · <code>reproducibility</code></p>
+<hr>
+</section>
+<section id="isc-high-performance-scc-2024-2nd-place" class="level2">
+<h2 class="anchored" data-anchor-id="isc-high-performance-scc-2024-2nd-place">ISC High Performance SCC 2024 — 2nd place</h2>
+<p><em>Hamburg, Germany · May 2024 · one of the top three global supercomputing competitions</em></p>
+<p><strong>The problem.</strong> Take <strong>Neko</strong>, a spectral-element CFD application, and make it run as fast as possible on a 10 × NVIDIA H100 cluster within a fixed power budget.</p>
+<p><strong>What I did.</strong> Profiled the solver to find where the time actually went, then worked on parallel decomposition, communication patterns, and system-level tuning rather than guessing at compiler flags.</p>
+<p><strong>Outcome.</strong> <strong>18.5× speedup</strong> over the starting configuration, and 2nd place overall.</p>
+<p><code>CFD</code> · <code>parallel programming</code> · <code>MPI/NCCL</code> · <code>profiling</code> · <code>10× H100</code></p>
+<hr>
+</section>
+<section id="apac-hpc-ai-competition-2023-1st-place" class="level2">
+<h2 class="anchored" data-anchor-id="apac-hpc-ai-competition-2023-1st-place">APAC HPC-AI Competition 2023 — 1st place</h2>
+<p><em>Sydney, Australia · February 2024 · against 21 teams from 17 universities</em></p>
+<p><strong>The problem.</strong> Optimize inference for the <strong>BLOOM</strong> large language model across a multi-GPU cluster.</p>
+<p><strong>What I did.</strong> Combined <strong>tensor parallelism</strong>, <strong>DeepSpeed</strong> inference optimization, and <strong>NVIDIA NCCL</strong> collective tuning, measuring each change instead of stacking them and hoping.</p>
+<p><strong>Outcome.</strong> <strong>11.4× inference speedup</strong>, and first place overall.</p>
+<p><code>BLOOM</code> · <code>tensor parallelism</code> · <code>DeepSpeed</code> · <code>NCCL</code> · <code>LLM inference</code></p>
+<hr>
+</section>
+<section id="fourcastnet-end-to-end-deployment-2nd-place" class="level2">
+<h2 class="anchored" data-anchor-id="fourcastnet-end-to-end-deployment-2nd-place">FourCastNet end-to-end deployment — 2nd place</h2>
+<p><em>High Performance Application Competition 2023 · Hsinchu, Taiwan · against 8 teams from 7 universities</em></p>
+<p>Deployed and ran <strong>FourCastNet</strong>, an AI-driven global climate model, end to end: environment setup, multi-node training, inference, and visualization. Less a single-technique problem than a test of whether you can carry a full AI workflow from a bare cluster to a finished result.</p>
+<p><code>FourCastNet</code> · <code>multi-node training</code> · <code>full-stack AI workflow</code></p>
+<hr>
+</section>
+<section id="quantum-machine-learning-classifier" class="level2">
+<h2 class="anchored" data-anchor-id="quantum-machine-learning-classifier">Quantum machine learning classifier</h2>
+<p><em>National Center for High-performance Computing · Hsinchu, Taiwan · Summer 2023</em></p>
+<p>Implemented a <strong>data re-uploading classifier</strong> using quantum machine learning methods in <strong>PennyLane</strong>, as part of a summer software engineering internship at NCHC.</p>
+<p><code>PennyLane</code> · <code>QML</code> · <code>research</code></p>
+<hr>
+</section>
+<section id="this-website" class="level2">
+<h2 class="anchored" data-anchor-id="this-website">This website</h2>
+<p>Built as a <a href="https://quarto.org">Quarto</a> project and published with GitHub Pages from the <code>docs/</code> folder, set up so that a new post is a new folder and one <code>quarto render</code> away. It is where my MDS coursework and projects will land over the coming year.</p>
+<p><a href="https://github.com/EvanPai/EvanPai.github.io">Source on GitHub</a></p>
+<p><code>Quarto</code> · <code>GitHub Pages</code> · <code>Git</code></p>
 
 
 </section>
@@ -595,7 +649,7 @@ ul.task-list li input[type="checkbox"] {
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-<p>© 2026 Evan Pai</p>
+<p>© 2026 Chen-An (Evan) Pai</p>
 </div>   
     <div class="nav-footer-center">
       &nbsp;
