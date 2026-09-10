@@ -1,0 +1,31 @@
+---
+title: "My first weeks in MDS"
+description: "Orientation, the first week of classes, and what actually surprised me about the pace."
+author: "Evan Pai"
+date: 2026-09-09
+categories: [MDS, reflections]
+image: first-weeks.jpg
+---
+
+Orientation week was mostly logistics — accounts, laptops, a room full of people
+introducing themselves — but the part that stuck with me was how quickly the cohort
+stopped being strangers. Everyone had arrived from somewhere different: economics,
+biology, engineering, a few people coming back after years of work. I had half
+expected a room of computer science graduates like me, and instead spent the week
+being reminded that most of the interesting questions in this field come from
+somewhere other than the code.
+
+Then classes started, and the pace was the real surprise. I knew MDS was compressed;
+I had not internalised what a block schedule feels like from the inside. A topic is
+introduced, you use it in a lab two days later, and by the following week it is
+assumed knowledge. The instinct I brought from my undergraduate degree — read
+everything first, then start — stopped working almost immediately. What replaced it
+was starting before I felt ready and letting the gaps show up in the error messages.
+
+A few weeks in, I have settled somewhere between overwhelmed and genuinely enjoying
+it. The tooling side has been the easiest to love: Git, the shell, and Quarto have
+already replaced a pile of habits I did not realise were slowing me down, and this
+site is a direct result of that. The statistics is where I am working hardest, which
+is exactly why I came. Ask me again after the first round of quizzes.
+
+![Vancouver from campus during my first week at UBC.](first-weeks.jpg)

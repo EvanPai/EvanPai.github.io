@@ -1,0 +1,34 @@
+---
+title: "Projects"
+subtitle: "Selected work"
+toc: true
+---
+
+This page collects work I want to be able to point someone at. It is deliberately
+short — a few things explained properly beats a long list.
+
+<!-- TODO: replace the entries below with your own projects. For each one, keep the
+     same four beats: what the problem was, what you did, what came out of it, and a
+     link. Delete any entry you do not have a real answer for. -->
+
+## Personal website and portfolio
+
+**The problem.** I needed somewhere to put coursework and projects that was not a
+folder on my laptop, and that a recruiter could open in one click.
+
+**What I did.** Built this site as a [Quarto](https://quarto.org) project, published
+it with GitHub Pages from the `docs/` folder, and set it up so a new post is a new
+folder and a `quarto render` away.
+
+**Outcome.** A site I can extend every week for the rest of MDS without touching the
+plumbing again.
+
+[Source on GitHub](https://github.com/EvanPai/EvanPai.github.io)
+
+---
+
+## Coming soon
+
+More projects will land here as MDS goes on — the course work covering machine
+learning, statistical inference, and data visualization all produces something worth
+writing up.
