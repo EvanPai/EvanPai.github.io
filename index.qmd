@@ -1,6 +1,6 @@
 ---
-title: "Evan Pai"
-subtitle: "Master of Data Science student at the University of British Columbia"
+title: "Chen-An (Evan) Pai"
+subtitle: "Master of Data Science student at UBC · AI systems and high-performance computing"
 image: images/profile.jpg
 toc: false
 about:
@@ -11,6 +11,9 @@ about:
     - icon: github
       text: GitHub
       href: https://github.com/EvanPai
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/evanpai/
     - icon: envelope
       text: Email
       href: mailto:evan105pai@gmail.com
@@ -18,21 +21,21 @@ about:
 
 ## Hello
 
-I am a Master of Data Science student at the University of British Columbia in
-Vancouver. I came to MDS from a computer science background, where I spent most of
-my time writing software and found that the questions I kept coming back to were
-about the data underneath it: what it can support, what it cannot, and how much of
-a conclusion is really there.
+I am a Master of Data Science student at the University of British Columbia. I came
+here from computer science at National Tsing Hua University in Taiwan, where I spent
+most of my degree on the systems side of machine learning — making large models run
+faster on GPU clusters, and teaching other students how to do the same.
 
-MDS is where I am turning that interest into a discipline — statistics and
-experiment design alongside the engineering I already enjoy. I am most drawn to the
-place where the two meet: models that are statistically honest *and* survive contact
-with production.
+That work took me to three international student cluster competitions. My teams
+placed 3rd at SC24 in Atlanta, 2nd at ISC 2024 in Hamburg, and 1st at the 2023 APAC
+HPC-AI Competition, on problems ranging from MLPerf Stable Diffusion benchmarking to
+an 11.4× speedup on BLOOM inference. Somewhere in the middle of optimizing other
+people's models, I got curious about the models themselves — and about how much of a
+reported result is real.
 
-After graduating I am looking for work as a **machine learning engineer** or **data
-scientist**, ideally somewhere the same person gets to frame the question, build the
-model, and ship it.
+MDS is the other half of that education. I already know how to make a model run; I
+came here to learn how to tell whether it should be trusted. I am looking for
+**machine learning engineer** and **data scientist** roles where both halves matter.
 
-This site is where I keep my coursework, projects, and notes as I go. There is more
-about me on the [about page](about.qmd), and what I have been working on lately is
-on the [blog](blog.qmd).
+More detail is on the [about page](about.qmd), my work is on
+[projects](projects.qmd), and I write about the program on the [blog](blog.qmd).

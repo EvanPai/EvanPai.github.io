@@ -3,8 +3,8 @@ project:
   output-dir: docs
 
 website:
-  title: "Evan Pai"
-  description: "Personal website and data science portfolio of Evan Pai, MDS student at the University of British Columbia."
+  title: "Chen-An (Evan) Pai"
+  description: "Personal website and portfolio of Chen-An (Evan) Pai — Master of Data Science student at UBC, working in AI systems, LLM inference, and high-performance computing."
   site-url: https://evanpai.github.io
   navbar:
     left:
@@ -20,8 +20,11 @@ website:
       - icon: github
         href: https://github.com/EvanPai
         aria-label: GitHub
+      - icon: linkedin
+        href: https://www.linkedin.com/in/evanpai/
+        aria-label: LinkedIn
   page-footer:
-    left: "© 2026 Evan Pai"
+    left: "© 2026 Chen-An (Evan) Pai"
     right: "Built with [Quarto](https://quarto.org)"
   open-graph: true
 

@@ -1,34 +1,121 @@
 ---
 title: "Projects"
-subtitle: "Selected work"
+subtitle: "Selected work in AI systems, HPC, and data science"
 toc: true
+toc-depth: 2
 ---
 
-This page collects work I want to be able to point someone at. It is deliberately
-short — a few things explained properly beats a long list.
+A few things explained properly, rather than a long list. Most of this work was done
+on GPU clusters, either for international student cluster competitions or as
+research and internship work.
 
-<!-- TODO: replace the entries below with your own projects. For each one, keep the
-     same four beats: what the problem was, what you did, what came out of it, and a
-     link. Delete any entry you do not have a real answer for. -->
+## Local LLM deployment and inference optimization
 
-## Personal website and portfolio
+**The problem.** Running a 70-billion-parameter model as an interactive chatbot is a
+throughput problem, not a modelling one. Naive serving leaves most of the GPU idle
+between requests.
 
-**The problem.** I needed somewhere to put coursework and projects that was not a
-folder on my laptop, and that a recruiter could open in one click.
+**What I did.** Built an end-to-end local chatbot around **LLaMA 3.1 70B**, served
+with **vLLM** behind a **Gradio** front end on 4 NVIDIA H100 GPUs, then worked
+through the inference path — continuous batching, kernel-level tuning, and memory
+layout.
 
-**What I did.** Built this site as a [Quarto](https://quarto.org) project, published
-it with GitHub Pages from the `docs/` folder, and set it up so a new post is a new
-folder and a `quarto render` away.
+**Outcome.** **3× throughput increase** over the baseline deployment, with the whole
+system running locally rather than against a hosted API.
 
-**Outcome.** A site I can extend every week for the rest of MDS without touching the
-plumbing again.
+`LLaMA 3.1` · `vLLM` · `Gradio` · `CUDA` · `4× H100`
+
+---
+
+## SC24 Student Cluster Competition — 3rd place
+
+*Atlanta, US · November 2024 · the leading global HPC-AI student competition*
+
+Three tasks over four days, on a cluster we configured and tuned ourselves:
+
+- **MLPerf benchmarking.** Optimized **Stable Diffusion** for MLPerf on 4 NVIDIA
+  H100 GPUs using **TensorRT**, tuning precision and kernel selection against the
+  benchmark's accuracy constraints.
+- **Mystery application — cat object detection.** Trained **YOLO11x** for a
+  same-day object detection challenge, placing **3rd** in that task.
+- **Reproducibility challenge.** Reproduced the findings of the *DataLife* paper on
+  the 1000 Genomes Project — the task that did the most to convince me I wanted the
+  statistical half of this education.
+
+The reproducibility work became a peer-reviewed critique, now in press at IEEE TPDS
+([DOI: 10.1109/TPDS.2025.3627428](https://doi.org/10.1109/TPDS.2025.3627428)).
+
+`TensorRT` · `Stable Diffusion` · `YOLO11x` · `MLPerf` · `reproducibility`
+
+---
+
+## ISC High Performance SCC 2024 — 2nd place
+
+*Hamburg, Germany · May 2024 · one of the top three global supercomputing competitions*
+
+**The problem.** Take **Neko**, a spectral-element CFD application, and make it run
+as fast as possible on a 10 × NVIDIA H100 cluster within a fixed power budget.
+
+**What I did.** Profiled the solver to find where the time actually went, then
+worked on parallel decomposition, communication patterns, and system-level tuning
+rather than guessing at compiler flags.
+
+**Outcome.** **18.5× speedup** over the starting configuration, and 2nd place
+overall.
+
+`CFD` · `parallel programming` · `MPI/NCCL` · `profiling` · `10× H100`
+
+---
+
+## APAC HPC-AI Competition 2023 — 1st place
+
+*Sydney, Australia · February 2024 · against 21 teams from 17 universities*
+
+**The problem.** Optimize inference for the **BLOOM** large language model across a
+multi-GPU cluster.
+
+**What I did.** Combined **tensor parallelism**, **DeepSpeed** inference
+optimization, and **NVIDIA NCCL** collective tuning, measuring each change instead
+of stacking them and hoping.
+
+**Outcome.** **11.4× inference speedup**, and first place overall.
+
+`BLOOM` · `tensor parallelism` · `DeepSpeed` · `NCCL` · `LLM inference`
+
+---
+
+## FourCastNet end-to-end deployment — 2nd place
+
+*High Performance Application Competition 2023 · Hsinchu, Taiwan · against 8 teams
+from 7 universities*
+
+Deployed and ran **FourCastNet**, an AI-driven global climate model, end to end:
+environment setup, multi-node training, inference, and visualization. Less a
+single-technique problem than a test of whether you can carry a full AI workflow
+from a bare cluster to a finished result.
+
+`FourCastNet` · `multi-node training` · `full-stack AI workflow`
+
+---
+
+## Quantum machine learning classifier
+
+*National Center for High-performance Computing · Hsinchu, Taiwan · Summer 2023*
+
+Implemented a **data re-uploading classifier** using quantum machine learning
+methods in **PennyLane**, as part of a summer software engineering internship at
+NCHC.
+
+`PennyLane` · `QML` · `research`
+
+---
+
+## This website
+
+Built as a [Quarto](https://quarto.org) project and published with GitHub Pages from
+the `docs/` folder, set up so that a new post is a new folder and one `quarto render`
+away. It is where my MDS coursework and projects will land over the coming year.
 
 [Source on GitHub](https://github.com/EvanPai/EvanPai.github.io)
 
----
-
-## Coming soon
-
-More projects will land here as MDS goes on — the course work covering machine
-learning, statistical inference, and data visualization all produces something worth
-writing up.
+`Quarto` · `GitHub Pages` · `Git`
