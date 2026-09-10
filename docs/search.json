@@ -1,0 +1,100 @@
+[
+  {
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "Blog",
+    "section": "",
+    "text": "My first weeks in MDS\n\n\n\nMDS\n\nreflections\n\n\n\nOrientation, the first week of classes, and what actually surprised me about the pace.\n\n\n\n\n\nSep 9, 2026\n\n2 min\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Evan Pai",
+    "section": "",
+    "text": "I am a Master of Data Science student at the University of British Columbia in Vancouver. I came to MDS from a computer science background, where I spent most of my time writing software and found that the questions I kept coming back to were about the data underneath it: what it can support, what it cannot, and how much of a conclusion is really there.\nMDS is where I am turning that interest into a discipline — statistics and experiment design alongside the engineering I already enjoy. I am most drawn to the place where the two meet: models that are statistically honest and survive contact with production.\nAfter graduating I am looking for work as a machine learning engineer or data scientist, ideally somewhere the same person gets to frame the question, build the model, and ship it.\nThis site is where I keep my coursework, projects, and notes as I go. There is more about me on the about page, and what I have been working on lately is on the blog."
+  },
+  {
+    "objectID": "index.html#hello",
+    "href": "index.html#hello",
+    "title": "Evan Pai",
+    "section": "",
+    "text": "I am a Master of Data Science student at the University of British Columbia in Vancouver. I came to MDS from a computer science background, where I spent most of my time writing software and found that the questions I kept coming back to were about the data underneath it: what it can support, what it cannot, and how much of a conclusion is really there.\nMDS is where I am turning that interest into a discipline — statistics and experiment design alongside the engineering I already enjoy. I am most drawn to the place where the two meet: models that are statistically honest and survive contact with production.\nAfter graduating I am looking for work as a machine learning engineer or data scientist, ideally somewhere the same person gets to frame the question, build the model, and ship it.\nThis site is where I keep my coursework, projects, and notes as I go. There is more about me on the about page, and what I have been working on lately is on the blog."
+  },
+  {
+    "objectID": "posts/first-weeks/index.html",
+    "href": "posts/first-weeks/index.html",
+    "title": "My first weeks in MDS",
+    "section": "",
+    "text": "Orientation week was mostly logistics — accounts, laptops, a room full of people introducing themselves — but the part that stuck with me was how quickly the cohort stopped being strangers. Everyone had arrived from somewhere different: economics, biology, engineering, a few people coming back after years of work. I had half expected a room of computer science graduates like me, and instead spent the week being reminded that most of the interesting questions in this field come from somewhere other than the code.\nThen classes started, and the pace was the real surprise. I knew MDS was compressed; I had not internalised what a block schedule feels like from the inside. A topic is introduced, you use it in a lab two days later, and by the following week it is assumed knowledge. The instinct I brought from my undergraduate degree — read everything first, then start — stopped working almost immediately. What replaced it was starting before I felt ready and letting the gaps show up in the error messages.\nA few weeks in, I have settled somewhere between overwhelmed and genuinely enjoying it. The tooling side has been the easiest to love: Git, the shell, and Quarto have already replaced a pile of habits I did not realise were slowing me down, and this site is a direct result of that. The statistics is where I am working hardest, which is exactly why I came. Ask me again after the first round of quizzes.\n\n\n\nVancouver from campus during my first week at UBC."
+  },
+  {
+    "objectID": "projects.html",
+    "href": "projects.html",
+    "title": "Projects",
+    "section": "",
+    "text": "This page collects work I want to be able to point someone at. It is deliberately short — a few things explained properly beats a long list."
+  },
+  {
+    "objectID": "projects.html#personal-website-and-portfolio",
+    "href": "projects.html#personal-website-and-portfolio",
+    "title": "Projects",
+    "section": "Personal website and portfolio",
+    "text": "Personal website and portfolio\nThe problem. I needed somewhere to put coursework and projects that was not a folder on my laptop, and that a recruiter could open in one click.\nWhat I did. Built this site as a Quarto project, published it with GitHub Pages from the docs/ folder, and set it up so a new post is a new folder and a quarto render away.\nOutcome. A site I can extend every week for the rest of MDS without touching the plumbing again.\nSource on GitHub"
+  },
+  {
+    "objectID": "projects.html#coming-soon",
+    "href": "projects.html#coming-soon",
+    "title": "Projects",
+    "section": "Coming soon",
+    "text": "Coming soon\nMore projects will land here as MDS goes on — the course work covering machine learning, statistical inference, and data visualization all produces something worth writing up."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "I trained as a computer scientist before coming to MDS, studying computer science at National Tsing Hua University in Taiwan. Most of my degree was spent on the software side of things — algorithms, systems, and enough coursework in machine learning to know that I liked it and did not yet understand it properly.\nWhat I took away was a habit more than a subject: build the thing, run it, and let the result tell you whether you were right. That habit turned out to transfer directly to data science, where the temptation to trust a number you have not checked is considerably stronger."
+  },
+  {
+    "objectID": "about.html#background",
+    "href": "about.html#background",
+    "title": "About",
+    "section": "",
+    "text": "I trained as a computer scientist before coming to MDS, studying computer science at National Tsing Hua University in Taiwan. Most of my degree was spent on the software side of things — algorithms, systems, and enough coursework in machine learning to know that I liked it and did not yet understand it properly.\nWhat I took away was a habit more than a subject: build the thing, run it, and let the result tell you whether you were right. That habit turned out to transfer directly to data science, where the temptation to trust a number you have not checked is considerably stronger."
+  },
+  {
+    "objectID": "about.html#why-data-science",
+    "href": "about.html#why-data-science",
+    "title": "About",
+    "section": "Why data science",
+    "text": "Why data science\nThe turning point was noticing how often the hard part of a technical problem was not the code. A model would train and report a number, and the real question — does this number mean what we think it means, and would it hold up on next month’s data — was the one nobody had the tools to answer.\nThat is what MDS is for me: filling in the statistical half of a problem I had only been solving from the engineering side. Experiment design, inference, and knowing when a result is genuinely there rather than an artifact of how the data was collected."
+  },
+  {
+    "objectID": "about.html#what-i-work-with",
+    "href": "about.html#what-i-work-with",
+    "title": "About",
+    "section": "What I work with",
+    "text": "What I work with\n\nLanguages — Python, R, SQL\nTooling — Git and GitHub, the Unix shell, Quarto, Jupyter, conda\nAreas — machine learning, statistical inference, data visualization, reproducible workflows\n\nThis list is going to change over the year. I would rather it reflect what I have actually used than what I have heard of, so I update it as the program goes."
+  },
+  {
+    "objectID": "about.html#where-i-am-headed",
+    "href": "about.html#where-i-am-headed",
+    "title": "About",
+    "section": "Where I am headed",
+    "text": "Where I am headed\nI am aiming for a machine learning engineer or data scientist role after MDS. The work I want is the kind where the same person frames the question, builds the model, and is still around when it goes to production — my background is a reasonable fit for that, and MDS is filling in the part I was missing."
+  },
+  {
+    "objectID": "about.html#outside-of-data-science",
+    "href": "about.html#outside-of-data-science",
+    "title": "About",
+    "section": "Outside of data science",
+    "text": "Outside of data science\nVancouver has been an adjustment in the best way. Coming from Taiwan, the scale of the mountains sitting at the end of the street still catches me off guard, and I have been using weekends to get out into them."
+  },
+  {
+    "objectID": "about.html#get-in-touch",
+    "href": "about.html#get-in-touch",
+    "title": "About",
+    "section": "Get in touch",
+    "text": "Get in touch\nThe fastest way to reach me is email, and my code lives on GitHub."
+  }
+]
