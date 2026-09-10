@@ -68,6 +68,8 @@ responsible for, under a hard power budget:
 The reproducibility work became a peer-reviewed critique, now in press at IEEE TPDS
 ([DOI: 10.1109/TPDS.2025.3627428](https://doi.org/10.1109/TPDS.2025.3627428)).
 
+![Our team on the SC24 competition floor with the cluster we built, configured, and were entirely responsible for.](images/competitions/sc24-team-cluster.jpg){fig-alt="The NTHU student cluster competition team standing with their cluster on the SC24 floor in Atlanta"}
+
 `TensorRT` · `Stable Diffusion` · `YOLO11x` · `MLPerf` · `reproducibility`
 
 ---
@@ -88,6 +90,12 @@ the unglamorous part, done systematically, rather than guessing at compiler flag
 **Outcome.** **18.5× speedup** over the starting configuration, and 2nd place
 overall on the international stage.
 
+::: {layout-ncol=2}
+![Second place, announced on stage in Hamburg.](images/competitions/isc24-podium.jpg){fig-alt="Evan Pai receiving the second place award on stage at ISC High Performance 2024"}
+
+![The team with the trophy afterwards.](images/competitions/isc24-team-trophy.jpg){fig-alt="The NTHU team holding the ISC 2024 second place trophy"}
+:::
+
 `CFD` · `parallel programming` · `MPI/NCCL` · `profiling` · `10× H100`
 
 ---
@@ -106,6 +114,12 @@ change so the final number could be explained rather than just reported.
 
 **Outcome.** **11.4× inference speedup**, and first place overall.
 
+::: {layout-ncol=2}
+![First place, on stage in Sydney.](images/competitions/apac-podium.jpg){fig-alt="Evan Pai receiving the first place award on stage at the APAC HPC-AI Competition"}
+
+![The team with the first place trophy.](images/competitions/apac-team-trophy.jpg){fig-alt="The NTHU team holding the APAC HPC-AI Competition first place trophy"}
+:::
+
 `BLOOM` · `tensor parallelism` · `DeepSpeed` · `NCCL` · `LLM inference`
 
 ---
@@ -119,6 +133,8 @@ Deployed and ran **FourCastNet**, an AI-driven global climate model, end to end:
 environment setup, multi-node training, inference, and visualization. Less a
 single-technique problem than a test of whether you can carry an entire AI workflow
 from a bare cluster to a finished, interpretable result.
+
+![Second place, on stage in Hsinchu.](images/competitions/hipac-podium.jpg){fig-alt="Evan Pai receiving the second place award on stage at the High Performance Application Competition 2023"}
 
 `FourCastNet` · `multi-node training` · `full-stack AI workflow`
 

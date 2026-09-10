@@ -46,6 +46,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-529c26969d27a2a2473a4b9f3bafd9fb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -79,7 +82,9 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="styles.css">
 <meta property="og:title" content="Projects – Evan Pai">
 <meta property="og:description" content="Selected work in ML systems, software engineering, and high-performance computing">
+<meta property="og:image" content="https://evanpai.github.io/images/competitions/sc24-team-cluster.jpg">
 <meta property="og:site_name" content="Evan Pai">
+<meta property="og:image:alt" content="The NTHU student cluster competition team standing with their cluster on the SC24 floor in Atlanta">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -205,6 +210,12 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>Reproducibility challenge.</strong> Reproduced the findings of the <em>DataLife</em> paper on the 1000 Genomes Project — the task that did the most to convince me I wanted the statistical half of this education.</li>
 </ul>
 <p>The reproducibility work became a peer-reviewed critique, now in press at IEEE TPDS (<a href="https://doi.org/10.1109/TPDS.2025.3627428">DOI: 10.1109/TPDS.2025.3627428</a>).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/competitions/sc24-team-cluster.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Our team on the SC24 competition floor with the cluster we built, configured, and were entirely responsible for."><img src="images/competitions/sc24-team-cluster.jpg" class="img-fluid figure-img" alt="The NTHU student cluster competition team standing with their cluster on the SC24 floor in Atlanta"></a></p>
+<figcaption>Our team on the SC24 competition floor with the cluster we built, configured, and were entirely responsible for.</figcaption>
+</figure>
+</div>
 <p><code>TensorRT</code> · <code>Stable Diffusion</code> · <code>YOLO11x</code> · <code>MLPerf</code> · <code>reproducibility</code></p>
 <hr>
 </section>
@@ -214,6 +225,26 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>The problem.</strong> Take <strong>Neko</strong>, a spectral-element CFD application, and make it run as fast as possible on a 10 × NVIDIA H100 cluster inside a fixed power envelope, against the strongest student HPC teams in the world.</p>
 <p><strong>What I did.</strong> Profiled the solver to find where time was actually going, then worked the parallel decomposition, communication patterns, and system-level tuning — the unglamorous part, done systematically, rather than guessing at compiler flags.</p>
 <p><strong>Outcome.</strong> <strong>18.5× speedup</strong> over the starting configuration, and 2nd place overall on the international stage.</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/competitions/isc24-podium.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Second place, announced on stage in Hamburg."><img src="images/competitions/isc24-podium.jpg" class="img-fluid figure-img" alt="Evan Pai receiving the second place award on stage at ISC High Performance 2024"></a></p>
+<figcaption>Second place, announced on stage in Hamburg.</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/competitions/isc24-team-trophy.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="The team with the trophy afterwards."><img src="images/competitions/isc24-team-trophy.jpg" class="img-fluid figure-img" alt="The NTHU team holding the ISC 2024 second place trophy"></a></p>
+<figcaption>The team with the trophy afterwards.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
 <p><code>CFD</code> · <code>parallel programming</code> · <code>MPI/NCCL</code> · <code>profiling</code> · <code>10× H100</code></p>
 <hr>
 </section>
@@ -223,6 +254,26 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>The problem.</strong> Optimize inference for the <strong>BLOOM</strong> large language model across a multi-GPU cluster — a full-stack LLM systems problem, from model partitioning down to the interconnect.</p>
 <p><strong>What I did.</strong> Combined <strong>tensor parallelism</strong>, <strong>DeepSpeed</strong> inference optimization, and <strong>NVIDIA NCCL</strong> collective tuning, isolating and measuring each change so the final number could be explained rather than just reported.</p>
 <p><strong>Outcome.</strong> <strong>11.4× inference speedup</strong>, and first place overall.</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/competitions/apac-podium.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="First place, on stage in Sydney."><img src="images/competitions/apac-podium.jpg" class="img-fluid figure-img" alt="Evan Pai receiving the first place award on stage at the APAC HPC-AI Competition"></a></p>
+<figcaption>First place, on stage in Sydney.</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/competitions/apac-team-trophy.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="The team with the first place trophy."><img src="images/competitions/apac-team-trophy.jpg" class="img-fluid figure-img" alt="The NTHU team holding the APAC HPC-AI Competition first place trophy"></a></p>
+<figcaption>The team with the first place trophy.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
 <p><code>BLOOM</code> · <code>tensor parallelism</code> · <code>DeepSpeed</code> · <code>NCCL</code> · <code>LLM inference</code></p>
 <hr>
 </section>
@@ -230,6 +281,12 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="fourcastnet-end-to-end-deployment-2nd-place">FourCastNet end-to-end deployment — 2nd place 🥈</h2>
 <p><em>High Performance Application Competition 2023 · Hsinchu, Taiwan · 2nd of 8 teams from 7 universities</em></p>
 <p>Deployed and ran <strong>FourCastNet</strong>, an AI-driven global climate model, end to end: environment setup, multi-node training, inference, and visualization. Less a single-technique problem than a test of whether you can carry an entire AI workflow from a bare cluster to a finished, interpretable result.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/competitions/hipac-podium.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Second place, on stage in Hsinchu."><img src="images/competitions/hipac-podium.jpg" class="img-fluid figure-img" alt="Evan Pai receiving the second place award on stage at the High Performance Application Competition 2023"></a></p>
+<figcaption>Second place, on stage in Hsinchu.</figcaption>
+</figure>
+</div>
 <p><code>FourCastNet</code> · <code>multi-node training</code> · <code>full-stack AI workflow</code></p>
 <hr>
 </section>
@@ -669,6 +726,38 @@ ul.task-list li input[type="checkbox"] {
 </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 

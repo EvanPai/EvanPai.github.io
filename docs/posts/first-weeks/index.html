@@ -49,6 +49,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap-529c26969d27a2a2473a4b9f3bafd9fb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -193,7 +196,7 @@ ul.task-list li input[type="checkbox"] {
 <p>A few weeks in, I have settled somewhere between overwhelmed and genuinely enjoying it. The tooling has been the easiest part to love — Git and the shell I already knew from cluster work, and Quarto has quietly replaced a pile of habits I did not realise were slowing me down; this site is a direct result. The statistics is where I am working hardest, and that is exactly why I came. I spent my undergraduate years making models run faster without being able to say much about whether their results deserved the compute. That is the gap I am here to close. Ask me again after the first round of quizzes.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="first-weeks.jpg" class="img-fluid figure-img"></p>
+<p><a href="first-weeks.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Vancouver from campus during my first week at UBC."><img src="first-weeks.jpg" class="img-fluid figure-img" alt="Vancouver from campus during my first week at UBC."></a></p>
 <figcaption>Vancouver from campus during my first week at UBC.</figcaption>
 </figure>
 </div>
@@ -620,6 +623,38 @@ ul.task-list li input[type="checkbox"] {
 </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 

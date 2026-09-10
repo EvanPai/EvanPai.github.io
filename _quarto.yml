@@ -33,6 +33,7 @@ format:
     theme: litera
     css: styles.css
     toc: true
+    lightbox: auto
     toc-title: "On this page"
     anchor-sections: true
     smooth-scroll: true

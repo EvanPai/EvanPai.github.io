@@ -28,8 +28,8 @@ the hardest end of machine learning infrastructure: making very large models run
 GPU clusters, and teaching other students how to do it.
 
 That work put me on the floor at the world's top supercomputing competitions. My
-teams took **1st place at the 2023 APAC HPC-AI Competition**, **2nd at ISC High
-Performance 2024** in Hamburg, and **3rd at SC24** in Atlanta — three of the most
+teams took **1st place at the 2023 APAC HPC-AI Competition in Australia**, **2nd at ISC High
+Performance 2024** in Germany, and **3rd at SC24** in America — three of the most
 competitive HPC-AI events in the world, where fewer than twenty teams are selected
 from a global applicant pool to compete in person. Along the way we made BLOOM
 inference 11.4× faster, a CFD solver 18.5× faster, and a 70B-parameter chatbot serve
