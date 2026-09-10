@@ -1,6 +1,6 @@
 ---
-title: "Chen-An (Evan) Pai"
-subtitle: "Master of Data Science student at UBC · AI systems and high-performance computing"
+title: "Evan Pai"
+subtitle: "Master of Data Science student at UBC · ML systems, software engineering, and high-performance computing"
 image: images/profile.jpg
 toc: false
 about:
@@ -21,21 +21,31 @@ about:
 
 ## Hello
 
-I am a Master of Data Science student at the University of British Columbia. I came
-here from computer science at National Tsing Hua University in Taiwan, where I spent
-most of my degree on the systems side of machine learning — making large models run
-faster on GPU clusters, and teaching other students how to do the same.
+I am a Master of Data Science student at the University of British Columbia, here on
+a **CAD $10,000 MDS Scholarship**. I came from computer science at National Tsing
+Hua University in Taiwan, where I spent four years as a software engineer working at
+the hardest end of machine learning infrastructure: making very large models run on
+GPU clusters, and teaching other students how to do it.
 
-That work took me to three international student cluster competitions. My teams
-placed 3rd at SC24 in Atlanta, 2nd at ISC 2024 in Hamburg, and 1st at the 2023 APAC
-HPC-AI Competition, on problems ranging from MLPerf Stable Diffusion benchmarking to
-an 11.4× speedup on BLOOM inference. Somewhere in the middle of optimizing other
-people's models, I got curious about the models themselves — and about how much of a
-reported result is real.
+That work put me on the floor at the world's top supercomputing competitions. My
+teams took **1st place at the 2023 APAC HPC-AI Competition**, **2nd at ISC High
+Performance 2024** in Hamburg, and **3rd at SC24** in Atlanta — three of the most
+competitive HPC-AI events in the world, where fewer than twenty teams are selected
+from a global applicant pool to compete in person. Along the way we made BLOOM
+inference 11.4× faster, a CFD solver 18.5× faster, and a 70B-parameter chatbot serve
+3× the throughput.
 
-MDS is the other half of that education. I already know how to make a model run; I
-came here to learn how to tell whether it should be trusted. I am looking for
-**machine learning engineer** and **data scientist** roles where both halves matter.
+Then I spent a summer as a **Data Scientist at IBM**, watching models meet the real
+world, and it reframed everything. My understanding of AI was almost entirely
+system-side: throughput, kernels, parallelism, deployment. The modelling half — the
+part that decides whether a result is worth deploying at all — I had only ever
+picked up in passing. **MDS is me completing that half deliberately.**
 
-More detail is on the [about page](about.qmd), my work is on
+What I am building toward is a full-stack ML engineer: someone who can take a
+problem through model development, training, and evaluation *and* through the
+acceleration, deployment, and pipeline work that gets it into production — because
+those are usually the same problem, and they are rarely the same person.
+
+I am looking for **machine learning engineer**, **data scientist**, and **software
+engineering** roles. More on the [about page](about.qmd), my work is on
 [projects](projects.qmd), and I write about the program on the [blog](blog.qmd).

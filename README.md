@@ -1,6 +1,6 @@
 # EvanPai.github.io
 
-Source for my personal website and portfolio (Chen-An "Evan" Pai), live at
+Source for my personal website and portfolio (Evan Pai), live at
 **<https://evanpai.github.io>**.
 
 Built with [Quarto](https://quarto.org) and published with GitHub Pages from the

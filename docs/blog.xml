@@ -5,15 +5,15 @@
       xmlns:dc="http://purl.org/dc/elements/1.1/" 
       version="2.0">
 <channel>
-<title>Chen-An (Evan) Pai</title>
+<title>Evan Pai</title>
 <link>https://evanpai.github.io/blog.html</link>
 <atom:link href="https://evanpai.github.io/blog.xml" rel="self" type="application/rss+xml"/>
-<description>Personal website and portfolio of Chen-An (Evan) Pai — Master of Data Science student at UBC, working in AI systems, LLM inference, and high-performance computing.</description>
+<description>Personal website and portfolio of Evan Pai — Master of Data Science student at UBC, working across ML modelling, software engineering, LLM inference, and high-performance computing.</description>
 <generator>quarto-1.10.18</generator>
 <lastBuildDate>Wed, 09 Sep 2026 07:00:00 GMT</lastBuildDate>
 <item>
   <title>My first weeks in MDS</title>
-  <dc:creator>Chen-An (Evan) Pai</dc:creator>
+  <dc:creator>Evan Pai</dc:creator>
   <link>https://evanpai.github.io/posts/first-weeks/</link>
   <description><![CDATA[ 
 
