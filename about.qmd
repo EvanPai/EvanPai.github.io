@@ -1,0 +1,61 @@
+---
+title: "About"
+subtitle: "A longer introduction"
+toc: true
+---
+
+## Background
+
+I trained as a computer scientist before coming to MDS, studying computer science at
+National Tsing Hua University in Taiwan. Most of my degree was spent on the software
+side of things — algorithms, systems, and enough coursework in machine learning to
+know that I liked it and did not yet understand it properly.
+
+What I took away was a habit more than a subject: build the thing, run it, and let
+the result tell you whether you were right. That habit turned out to transfer
+directly to data science, where the temptation to trust a number you have not
+checked is considerably stronger.
+
+## Why data science
+
+The turning point was noticing how often the hard part of a technical problem was
+not the code. A model would train and report a number, and the real question — does
+this number mean what we think it means, and would it hold up on next month's data —
+was the one nobody had the tools to answer.
+
+That is what MDS is for me: filling in the statistical half of a problem I had only
+been solving from the engineering side. Experiment design, inference, and knowing
+when a result is genuinely there rather than an artifact of how the data was
+collected.
+
+## What I work with
+
+- **Languages** — Python, R, SQL
+- **Tooling** — Git and GitHub, the Unix shell, Quarto, Jupyter, conda
+- **Areas** — machine learning, statistical inference, data visualization,
+  reproducible workflows
+
+This list is going to change over the year. I would rather it reflect what I have
+actually used than what I have heard of, so I update it as the program goes.
+
+## Where I am headed
+
+I am aiming for a **machine learning engineer** or **data scientist** role after
+MDS. The work I want is the kind where the same person frames the question, builds
+the model, and is still around when it goes to production — my background is a
+reasonable fit for that, and MDS is filling in the part I was missing.
+
+## Outside of data science
+
+Vancouver has been an adjustment in the best way. Coming from Taiwan, the scale of
+the mountains sitting at the end of the street still catches me off guard, and I
+have been using weekends to get out into them.
+
+<!-- TODO: replace this paragraph with your own hobbies — sports, music, food,
+     photography, games, whatever you actually do on a weekend. Two or three
+     sentences is plenty, and it is usually the part people remember. -->
+
+## Get in touch
+
+The fastest way to reach me is [email](mailto:evan105pai@gmail.com), and my code
+lives on [GitHub](https://github.com/EvanPai).
