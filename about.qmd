@@ -146,14 +146,13 @@ me equally credible on the modelling and inference side.
 
 ## Outside of data science
 
-**Muay Thai.** I train a few times a week, and it has quietly become the part of my
-week I protect most. It keeps me healthy, and the training is where I get to push
-past whatever limit I thought I had that month — a slower and far more satisfying
-kind of progress than anything that happens on a screen. It has also given me a much
-better sense of control over my body and my head. And it keeps me humble: there is
-always someone in the room who is better than you, and you find out immediately.
+**Muay Thai.** I train a few times a week. It keeps me healthy, and the training is
+where I get to push past whatever limit I thought I had that month, which is a
+satisfying kind of growth to keep chasing. It has also given me a much better sense
+of control over my body and my head. And it keeps me humble: there is always someone
+in the room who is better than you, and you find out immediately.
 
-![Pad rounds. The best hour of my week.](images/life/muaythai.jpg){fig-alt="Evan Pai training Muay Thai, hitting pads"}
+![Pad rounds at the gym.](images/life/muaythai.jpg){fig-alt="Evan Pai training Muay Thai, hitting pads"}
 
 **Cosplay.** I go to conventions in costume, which is the closest thing I have to a
 stage. It turns out to be an unusually good excuse to talk to strangers — everyone
