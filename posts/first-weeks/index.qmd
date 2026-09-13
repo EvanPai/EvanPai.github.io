@@ -32,4 +32,6 @@ making models run faster without being able to say much about whether their resu
 deserved the compute. That is the gap I am here to close. Ask me again after the
 first round of quizzes.
 
-![Vancouver from campus during my first week at UBC.](first-weeks.jpg)
+::: {.photo-single}
+![First week at UBC.](first-weeks.jpg)
+:::

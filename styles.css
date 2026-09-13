@@ -100,8 +100,7 @@ figure {
   margin: 2rem 0;
 }
 
-figure img,
-main > p > img {
+figure img {
   border-radius: 3px;
   box-shadow: 0 1px 10px rgba(31, 42, 48, 0.12);
 }
@@ -109,9 +108,63 @@ main > p > img {
 figcaption,
 .figure-caption {
   color: var(--ep-muted);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-style: italic;
+  line-height: 1.45;
   padding-top: 0.5rem;
+}
+
+/* Photo layouts share the text column's measure, so photos and paragraphs
+   line up on both edges. */
+.photo-row,
+.photo-single {
+  max-width: 68ch;
+  margin: 1.75rem 0 2.25rem;
+}
+
+.photo-row figure,
+.photo-single figure,
+.photo-row .quarto-figure,
+.photo-single .quarto-figure {
+  margin: 0;
+}
+
+.photo-row figure p,
+.photo-single figure p {
+  margin-bottom: 0;
+}
+
+/* Side-by-side photos: equal heights, widths set from each photo's aspect
+   ratio by _photo-rows.html. flex: 1 is the fallback before images load. */
+.photo-row {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+.photo-row > .photo-cell {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.photo-row img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Single photos: capped height so portraits never run the length of the
+   screen, centred in the column. */
+.photo-single img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 26rem;
+  margin: 0 auto;
+}
+
+.photo-single figcaption {
+  text-align: center;
 }
 
 /* --- Blog listing ------------------------------------------------------ */
@@ -148,6 +201,19 @@ figcaption,
 @media (max-width: 575.98px) {
   body {
     font-size: 1rem;
+  }
+
+  .photo-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .photo-row > .photo-cell {
+    width: 100%;
+  }
+
+  .photo-single img {
+    max-height: 32rem;
   }
 
   main h2 {

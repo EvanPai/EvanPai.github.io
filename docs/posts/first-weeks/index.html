@@ -194,16 +194,35 @@ ul.task-list li input[type="checkbox"] {
 <p>Orientation week was mostly logistics — accounts, laptops, a room full of people introducing themselves — but the part that stuck with me was how quickly the cohort stopped being strangers. Everyone had arrived from somewhere different: economics, biology, public health, a few people coming back after years of work. I had half expected a room of computer science graduates like me, and instead spent the week being reminded that most of the interesting questions in this field arrive from somewhere other than the code.</p>
 <p>Then classes started, and the pace was the real surprise. I knew MDS was compressed; I had not internalised what a block schedule feels like from the inside. A topic is introduced, you use it in a lab two days later, and by the following week it is assumed knowledge. Coming from a background where I would spend a week profiling a single application before changing anything, the instinct to understand a thing completely before starting stopped working almost immediately. What replaced it was starting before I felt ready and letting the gaps show up in the error messages.</p>
 <p>A few weeks in, I have settled somewhere between overwhelmed and genuinely enjoying it. The tooling has been the easiest part to love — Git and the shell I already knew from cluster work, and Quarto has quietly replaced a pile of habits I did not realise were slowing me down; this site is a direct result. The statistics is where I am working hardest, and that is exactly why I came. I spent my undergraduate years making models run faster without being able to say much about whether their results deserved the compute. That is the gap I am here to close. Ask me again after the first round of quizzes.</p>
+<div class="photo-single">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="first-weeks.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Vancouver from campus during my first week at UBC."><img src="first-weeks.jpg" class="img-fluid figure-img" alt="Vancouver from campus during my first week at UBC."></a></p>
-<figcaption>Vancouver from campus during my first week at UBC.</figcaption>
+<p><a href="first-weeks.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="First week at UBC."><img src="first-weeks.jpg" class="img-fluid figure-img" alt="First week at UBC."></a></p>
+<figcaption>First week at UBC.</figcaption>
 </figure>
+</div>
 </div>
 
 
 
 </main> <!-- /main -->
+<script>
+  // Give each photo in a .photo-row a flex-grow equal to its aspect ratio,
+  // so every photo in the row renders at exactly the same height without
+  // cropping. Recomputed from the real image, so swapping a photo just works.
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".photo-row > .photo-cell").forEach(function (cell) {
+      var img = cell.querySelector("img");
+      if (!img) return;
+      var apply = function () {
+        if (img.naturalWidth && img.naturalHeight) {
+          cell.style.flexGrow = img.naturalWidth / img.naturalHeight;
+        }
+      };
+      if (img.complete) apply(); else img.addEventListener("load", apply);
+    });
+  });
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

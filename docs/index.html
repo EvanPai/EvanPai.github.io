@@ -181,6 +181,23 @@ ul.task-list li input[type="checkbox"] {
 </main></div>
 </div>
  <!-- /main -->
+<script>
+  // Give each photo in a .photo-row a flex-grow equal to its aspect ratio,
+  // so every photo in the row renders at exactly the same height without
+  // cropping. Recomputed from the real image, so swapping a photo just works.
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".photo-row > .photo-cell").forEach(function (cell) {
+      var img = cell.querySelector("img");
+      if (!img) return;
+      var apply = function () {
+        if (img.naturalWidth && img.naturalHeight) {
+          cell.style.flexGrow = img.naturalWidth / img.naturalHeight;
+        }
+      };
+      if (img.complete) apply(); else img.addEventListener("load", apply);
+    });
+  });
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const isCodeAnnotation = (el) => {

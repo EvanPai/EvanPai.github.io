@@ -89,11 +89,15 @@ teams in the world, under a hard power budget.
 
 Three podium finishes on the international stage in twelve months.
 
-::: {layout-ncol=2}
+:::: {.photo-row}
+::: {.photo-cell}
 ![First place, APAC HPC-AI Competition 2023 — Sydney, Australia.](images/competitions/apac-trophy.jpg){fig-alt="Evan Pai holding the first place trophy from the APAC HPC-AI Competition"}
+:::
 
+::: {.photo-cell}
 ![Second place, ISC High Performance Student Cluster Competition 2024 — Hamburg, Germany.](images/competitions/isc24-trophy.jpg){fig-alt="Evan Pai holding the second place trophy from the ISC High Performance Student Cluster Competition"}
 :::
+::::
 
 The technical write-ups — an 11.4× BLOOM inference speedup, an 18.5× CFD
 acceleration, MLPerf Stable Diffusion tuning on H100s — are on the
@@ -151,18 +155,24 @@ where I get to push past whatever limit I thought I had that month, which is a
 satisfying kind of growth to keep chasing. It has also given me a much better sense
 of control over my body and my head, and it helps me build resilience.
 
+::: {.photo-single}
 ![Pad rounds at the gym.](images/life/muaythai.jpg){fig-alt="Evan Pai training Muay Thai, hitting pads"}
+:::
 
 **Cosplay.** I go to conventions in costume. Spending a day as a deliberately
 non-everyday version of yourself is energising in a way that is hard to explain, and
 watching the list of characters slowly grow is its own quiet satisfaction. I bring a
 camera and come home with far too many photos, every time.
 
-::: {layout-ncol=2}
-![Con day. The camera comes too.](images/life/cosplay-1.jpg){fig-alt="Evan Pai in costume at a convention"}
-
-![Another convention, another character.](images/life/cosplay-2.jpg){fig-alt="Evan Pai in a second cosplay costume at a convention"}
+:::: {.photo-row}
+::: {.photo-cell}
+![Denji from Chainsaw Man.](images/life/cosplay-1.jpg){fig-alt="Evan Pai in costume at a convention"}
 :::
+
+::: {.photo-cell}
+![Rover from Wuthering Waves.](images/life/cosplay-2.jpg){fig-alt="Evan Pai in a second cosplay costume at a convention"}
+:::
+::::
 
 ## Get in touch
 

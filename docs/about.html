@@ -248,9 +248,8 @@ ul.task-list li input[type="checkbox"] {
 </tbody>
 </table>
 <p>Three podium finishes on the international stage in twelve months.</p>
-<div class="quarto-layout-panel" data-layout-ncol="2">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="photo-row">
+<div class="photo-cell">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="images/competitions/apac-trophy.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="First place, APAC HPC-AI Competition 2023 — Sydney, Australia."><img src="images/competitions/apac-trophy.jpg" class="img-fluid figure-img" alt="Evan Pai holding the first place trophy from the APAC HPC-AI Competition"></a></p>
@@ -258,13 +257,12 @@ ul.task-list li input[type="checkbox"] {
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="photo-cell">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="images/competitions/isc24-trophy.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Second place, ISC High Performance Student Cluster Competition 2024 — Hamburg, Germany."><img src="images/competitions/isc24-trophy.jpg" class="img-fluid figure-img" alt="Evan Pai holding the second place trophy from the ISC High Performance Student Cluster Competition"></a></p>
 <figcaption>Second place, ISC High Performance Student Cluster Competition 2024 — Hamburg, Germany.</figcaption>
 </figure>
-</div>
 </div>
 </div>
 </div>
@@ -300,30 +298,30 @@ ul.task-list li input[type="checkbox"] {
 <section id="outside-of-work" class="level2">
 <h2 class="anchored" data-anchor-id="outside-of-work">Outside of work</h2>
 <p><strong>Muay Thai.</strong> I train a few times a week. It keeps me healthy, and the training is where I get to push past whatever limit I thought I had that month, which is a satisfying kind of growth to keep chasing. It has also given me a much better sense of control over my body and my head, and it helps me build resilience.</p>
+<div class="photo-single">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="images/life/muaythai.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Pad rounds at the gym."><img src="images/life/muaythai.jpg" class="img-fluid figure-img" alt="Evan Pai training Muay Thai, hitting pads"></a></p>
 <figcaption>Pad rounds at the gym.</figcaption>
 </figure>
 </div>
+</div>
 <p><strong>Cosplay.</strong> I go to conventions in costume. Spending a day as a deliberately non-everyday version of yourself is energising in a way that is hard to explain, and watching the list of characters slowly grow is its own quiet satisfaction. I bring a camera and come home with far too many photos, every time.</p>
-<div class="quarto-layout-panel" data-layout-ncol="2">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="photo-row">
+<div class="photo-cell">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/life/cosplay-1.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Con day. The camera comes too."><img src="images/life/cosplay-1.jpg" class="img-fluid figure-img" alt="Evan Pai in costume at a convention"></a></p>
-<figcaption>Con day. The camera comes too.</figcaption>
+<p><a href="images/life/cosplay-1.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Denji from Chainsaw Man."><img src="images/life/cosplay-1.jpg" class="img-fluid figure-img" alt="Evan Pai in costume at a convention"></a></p>
+<figcaption>Denji from Chainsaw Man.</figcaption>
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="photo-cell">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/life/cosplay-2.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Another convention, another character."><img src="images/life/cosplay-2.jpg" class="img-fluid figure-img" alt="Evan Pai in a second cosplay costume at a convention"></a></p>
-<figcaption>Another convention, another character.</figcaption>
+<p><a href="images/life/cosplay-2.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Rover from Wuthering Waves."><img src="images/life/cosplay-2.jpg" class="img-fluid figure-img" alt="Evan Pai in a second cosplay costume at a convention"></a></p>
+<figcaption>Rover from Wuthering Waves.</figcaption>
 </figure>
-</div>
 </div>
 </div>
 </div>
@@ -336,6 +334,23 @@ ul.task-list li input[type="checkbox"] {
 </section>
 
 </main> <!-- /main -->
+<script>
+  // Give each photo in a .photo-row a flex-grow equal to its aspect ratio,
+  // so every photo in the row renders at exactly the same height without
+  // cropping. Recomputed from the real image, so swapping a photo just works.
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".photo-row > .photo-cell").forEach(function (cell) {
+      var img = cell.querySelector("img");
+      if (!img) return;
+      var apply = function () {
+        if (img.naturalWidth && img.naturalHeight) {
+          cell.style.flexGrow = img.naturalWidth / img.naturalHeight;
+        }
+      };
+      if (img.complete) apply(); else img.addEventListener("load", apply);
+    });
+  });
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
