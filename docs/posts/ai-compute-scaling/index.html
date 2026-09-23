@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Evan Pai">
+<meta name="dcterms.date" content="2026-09-22">
+<meta name="description" content="Training compute for notable AI models doubles about every six months. I measure the trend with bootstrap intervals, test the C ≈ 6ND rule, then build a leakage-aware model validated on models released after its training cut-off, and find where it breaks.">
+
+<title>Predicting the compute behind an AI model, without leaking the answer – Evan Pai</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-529c26969d27a2a2473a4b9f3bafd9fb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Predicting the compute behind an AI model, without leaking the answer – Evan Pai">
+<meta property="og:description" content="Training compute for notable AI models doubles about every six months. I measure the trend with bootstrap intervals, test the C ≈ 6ND rule, then build a leakage-aware model validated on models released after its training cut-off, and find where it breaks.">
+<meta property="og:image" content="https://evanpai.github.io/posts/ai-compute-scaling/index_files/figure-html/fig-compute-trend-output-1.png">
+<meta property="og:site_name" content="Evan Pai">
+<meta property="og:image:height" content="918">
+<meta property="og:image:width" content="1540">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Evan Pai</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../blog.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../projects.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/EvanPai"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/evanpai/"> <i class="bi bi-linkedin" role="img" aria-label="LinkedIn">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#loading-and-cleaning" id="toc-loading-and-cleaning" class="nav-link" data-scroll-target="#loading-and-cleaning">Loading and cleaning</a></li>
+  <li><a href="#how-fast-is-training-compute-growing" id="toc-how-fast-is-training-compute-growing" class="nav-link" data-scroll-target="#how-fast-is-training-compute-growing">How fast is training compute growing?</a></li>
+  <li><a href="#does-c-6nd-hold" id="toc-does-c-6nd-hold" class="nav-link" data-scroll-target="#does-c-6nd-hold">Does C ≈ 6ND hold?</a></li>
+  <li><a href="#a-leakage-aware-model-of-training-compute" id="toc-a-leakage-aware-model-of-training-compute" class="nav-link" data-scroll-target="#a-leakage-aware-model-of-training-compute">A leakage-aware model of training compute</a></li>
+  <li><a href="#what-the-model-relies-on" id="toc-what-the-model-relies-on" class="nav-link" data-scroll-target="#what-the-model-relies-on">What the model relies on</a></li>
+  <li><a href="#where-it-fails" id="toc-where-it-fails" class="nav-link" data-scroll-target="#where-it-fails">Where it fails</a></li>
+  <li><a href="#what-i-found" id="toc-what-i-found" class="nav-link" data-scroll-target="#what-i-found">What I found</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Predicting the compute behind an AI model, without leaking the answer</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Python</div>
+    <div class="quarto-category">machine learning</div>
+    <div class="quarto-category">scaling laws</div>
+    <div class="quarto-category">data analysis</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Training compute for notable AI models doubles about every six months. I measure the trend with bootstrap intervals, test the C ≈ 6ND rule, then build a leakage-aware model validated on models released after its training cut-off, and find where it breaks.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Evan Pai </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 22, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Labs rarely say how much compute a new model took. They do often say how many parameters it has, roughly how much data it saw, and who built it. This post asks two questions. How fast is training compute growing? And how well can it be estimated from the details that <em>are</em> public? The second one is a small but realistic ML problem. The labels are noisy, a third of the features are missing, two tempting columns leak the answer, and the model has to hold up on models released after the training data ends.</p>
+<p><strong>Data.</strong> <a href="https://epoch.ai/data/ai-models">Data on AI Models</a> by Epoch AI (the <em>Notable AI Models</em> table), licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Citation: Epoch AI, “Data on AI Models”. Published online at epoch.ai. Retrieved from <a href="https://epoch.ai/data/ai-models" class="uri">https://epoch.ai/data/ai-models</a> [online resource]. Accessed 23 Sep 2026. The table is updated daily, so I committed the snapshot downloaded on 23 September 2026 (<code>notable_ai_models.csv</code>, about 2.2 MB) next to this post. That keeps the numbers below reproducible.</p>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<div id="setup" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> BaseEstimator, RegressorMixin, clone</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyRegressor</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> HistGradientBoostingRegressor</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.inspection <span class="im">import</span> permutation_importance</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression, RidgeCV</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV, TimeSeriesSplit</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, StandardScaler</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>plt.rcParams.update({<span class="st">"figure.dpi"</span>: <span class="dv">110</span>, <span class="st">"axes.spines.top"</span>: <span class="va">False</span>, <span class="st">"axes.spines.right"</span>: <span class="va">False</span>})</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">521</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Confirms the render used this project's uv environment, not a global Python.</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sys.executable)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>/Users/evanpai/Desktop/UBC MDS/DSCI_521_computing_platform/DSCI_512_milestone2_evan1011/EvanPai.github.io/.venv/bin/python3</code></pre>
+</div>
+</div>
+</section>
+<section id="loading-and-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="loading-and-cleaning">Loading and cleaning</h2>
+<div id="load" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> pd.read_csv(<span class="st">"notable_ai_models.csv"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>models <span class="op">=</span> raw.assign(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    date<span class="op">=</span>pd.to_datetime(raw[<span class="st">"Publication date"</span>]),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    compute<span class="op">=</span>raw[<span class="st">"Training compute (FLOP)"</span>],</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    params<span class="op">=</span>raw[<span class="st">"Parameters"</span>],</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># a handful of rows list several dataset sizes as "a,b"; those become NaN</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    tokens<span class="op">=</span>pd.to_numeric(raw[<span class="st">"Training dataset size (total)"</span>], errors<span class="op">=</span><span class="st">"coerce"</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>models[<span class="st">"year"</span>] <span class="op">=</span> models[<span class="st">"date"</span>].dt.year <span class="op">+</span> (models[<span class="st">"date"</span>].dt.dayofyear <span class="op">-</span> <span class="dv">1</span>) <span class="op">/</span> <span class="fl">365.25</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Deep-learning era, and only rows where the target is known.</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>dl <span class="op">=</span> models[(models[<span class="st">"year"</span>] <span class="op">&gt;=</span> <span class="dv">2010</span>) <span class="op">&amp;</span> models[<span class="st">"compute"</span>].notna()].copy()</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="bu">len</span>(raw)<span class="sc">}</span><span class="ss"> notable models in total, </span><span class="sc">{</span><span class="bu">len</span>(dl)<span class="sc">}</span><span class="ss"> since 2010 with a compute estimate"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1072 notable models in total, 478 since 2010 with a compute estimate</code></pre>
+</div>
+</div>
+<p>Missing values are the main data problem, so I measure them before modelling anything.</p>
+<div class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"params"</span>: <span class="st">"Parameters"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"tokens"</span>: <span class="st">"Training dataset size"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Training hardware"</span>: <span class="st">"Training hardware"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Open model weights?"</span>: <span class="st">"Open weights flag"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Training compute cost (2023 USD)"</span>: <span class="st">"Training cost"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>(dl[<span class="bu">list</span>(cols)].isna().mean().rename(index<span class="op">=</span>cols).to_frame(<span class="st">"missing"</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>   .style.<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.0%}</span><span class="st">"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-missing" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="3">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-missing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Share of the 2010+ models with each field missing.
+</figcaption>
+<div aria-describedby="tbl-missing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-display" data-execution_count="3">
+<style type="text/css">
+</style>
+
+<table id="T_2bda6" class="cell caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_2bda6_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th id="T_2bda6_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">Parameters</th>
+<td id="T_2bda6_row0_col0" class="data row0 col0">12%</td>
+</tr>
+<tr class="even">
+<th id="T_2bda6_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">Training dataset size</th>
+<td id="T_2bda6_row1_col0" class="data row1 col0">20%</td>
+</tr>
+<tr class="odd">
+<th id="T_2bda6_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">Training hardware</th>
+<td id="T_2bda6_row2_col0" class="data row2 col0">37%</td>
+</tr>
+<tr class="even">
+<th id="T_2bda6_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">Open weights flag</th>
+<td id="T_2bda6_row3_col0" class="data row3 col0">8%</td>
+</tr>
+<tr class="odd">
+<th id="T_2bda6_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">Training cost</th>
+<td id="T_2bda6_row4_col0" class="data row4 col0">63%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="how-fast-is-training-compute-growing" class="level2">
+<h2 class="anchored" data-anchor-id="how-fast-is-training-compute-growing">How fast is training compute growing?</h2>
+<p>I regress <code>log10(compute)</code> on publication year. The slope <span class="math inline">\(b\)</span> is in orders of magnitude per year, so the doubling time is <span class="math inline">\(\log_{10} 2 / b\)</span> years. The data are uneven (many models from 2020 onwards, few from early years) and the residuals are far from normal. So instead of trusting the textbook standard error, I bootstrap: refit on 2,000 resampled datasets and take the 2.5th and 97.5th percentiles of the doubling time.</p>
+<div id="cell-doubling" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> doubling_months(df):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    slope <span class="op">=</span> np.polyfit(df[<span class="st">"year"</span>], np.log10(df[<span class="st">"compute"</span>]), <span class="dv">1</span>)[<span class="dv">0</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">12</span> <span class="op">*</span> np.log10(<span class="dv">2</span>) <span class="op">/</span> slope</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bootstrap(df, n<span class="op">=</span><span class="dv">2000</span>):</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="bu">len</span>(df), size<span class="op">=</span>(n, <span class="bu">len</span>(df)))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([doubling_months(df.iloc[i]) <span class="cf">for</span> i <span class="kw">in</span> idx])</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>subsets <span class="op">=</span> {</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"All domains"</span>: dl,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Language"</span>: dl[dl[<span class="st">"Domain"</span>] <span class="op">==</span> <span class="st">"Language"</span>],</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Vision"</span>: dl[dl[<span class="st">"Domain"</span>] <span class="op">==</span> <span class="st">"Vision"</span>],</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, df <span class="kw">in</span> subsets.items():</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    boots <span class="op">=</span> bootstrap(df)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    lo, hi <span class="op">=</span> np.percentile(boots, [<span class="fl">2.5</span>, <span class="fl">97.5</span>])</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    rows.append({<span class="st">"subset"</span>: name, <span class="st">"models"</span>: <span class="bu">len</span>(df),</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"doubling time (months)"</span>: <span class="bu">round</span>(doubling_months(df), <span class="dv">1</span>),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"95% bootstrap CI"</span>: <span class="ss">f"</span><span class="sc">{</span>lo<span class="sc">:.1f}</span><span class="ss"> to </span><span class="sc">{</span>hi<span class="sc">:.1f}</span><span class="ss">"</span>})</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(rows)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="doubling" class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">subset</th>
+<th data-quarto-table-cell-role="th">models</th>
+<th data-quarto-table-cell-role="th">doubling time (months)</th>
+<th data-quarto-table-cell-role="th">95% bootstrap CI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>All domains</td>
+<td>478</td>
+<td>5.7</td>
+<td>5.4 to 6.1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Language</td>
+<td>240</td>
+<td>4.9</td>
+<td>4.4 to 5.3</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Vision</td>
+<td>73</td>
+<td>6.8</td>
+<td>6.1 to 7.7</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-fig-compute-trend" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>domain_group <span class="op">=</span> dl[<span class="st">"Domain"</span>].where(dl[<span class="st">"Domain"</span>].isin([<span class="st">"Language"</span>, <span class="st">"Vision"</span>, <span class="st">"Games"</span>]), <span class="st">"Other / multimodal"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">4.6</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (name, df), colour <span class="kw">in</span> <span class="bu">zip</span>(dl.groupby(domain_group), [<span class="st">"#e09f3e"</span>, <span class="st">"#d1495b"</span>, <span class="st">"#8a8a8a"</span>, <span class="st">"#1b6ca8"</span>]):</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    ax.scatter(df[<span class="st">"year"</span>], df[<span class="st">"compute"</span>], s<span class="op">=</span><span class="dv">14</span>, alpha<span class="op">=</span><span class="fl">0.65</span>, label<span class="op">=</span>name, color<span class="op">=</span>colour)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>b, a <span class="op">=</span> np.polyfit(dl[<span class="st">"year"</span>], np.log10(dl[<span class="st">"compute"</span>]), <span class="dv">1</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>xs <span class="op">=</span> np.linspace(dl[<span class="st">"year"</span>].<span class="bu">min</span>(), dl[<span class="st">"year"</span>].<span class="bu">max</span>(), <span class="dv">100</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>ax.plot(xs, <span class="dv">10</span> <span class="op">**</span> (a <span class="op">+</span> b <span class="op">*</span> xs), color<span class="op">=</span><span class="st">"black"</span>, lw<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>ax.set_yscale(<span class="st">"log"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Publication year"</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Training compute (FLOP)"</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>ax.legend(frameon<span class="op">=</span><span class="va">False</span>, loc<span class="op">=</span><span class="st">"upper left"</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-compute-trend" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-compute-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="index_files/figure-html/fig-compute-trend-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Training compute of notable AI models since 2010 (log scale), coloured by domain. The line is the least-squares fit on all domains."><img src="index_files/figure-html/fig-compute-trend-output-1.png" width="770" height="459" class="figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-compute-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Training compute of notable AI models since 2010 (log scale), coloured by domain. The line is the least-squares fit on all domains.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Compute doubles roughly every six months. That is about three times faster than the hardware trend in my <a href="../../posts/gpu-hardware-trends/index.html">memory-wall post</a>, where peak FLOP/s per chip doubles about every 1.6 years. Most of the growth therefore comes from using <em>more chips for longer</em>, not from faster chips.</p>
+</section>
+<section id="does-c-6nd-hold" class="level2">
+<h2 class="anchored" data-anchor-id="does-c-6nd-hold">Does C ≈ 6ND hold?</h2>
+<p>For dense transformers, training compute is often approximated as <span class="math inline">\(C \approx 6ND\)</span>: <span class="math inline">\(N\)</span> parameters, <span class="math inline">\(D\)</span> training tokens, and 6 FLOPs per parameter per token (2 for the forward pass, 4 for the backward pass). If that holds, the two public numbers alone would almost pin down the answer. I check it on the language models that report all three quantities.</p>
+<div id="cell-fig-6nd" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>lang <span class="op">=</span> dl[(dl[<span class="st">"Domain"</span>] <span class="op">==</span> <span class="st">"Language"</span>) <span class="op">&amp;</span> dl[<span class="st">"params"</span>].notna() <span class="op">&amp;</span> dl[<span class="st">"tokens"</span>].notna()]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ratio <span class="op">=</span> np.log10(lang[<span class="st">"compute"</span>] <span class="op">/</span> (<span class="dv">6</span> <span class="op">*</span> lang[<span class="st">"params"</span>] <span class="op">*</span> lang[<span class="st">"tokens"</span>]))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">3.6</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>ax.hist(ratio, bins<span class="op">=</span><span class="dv">40</span>, color<span class="op">=</span><span class="st">"#1b6ca8"</span>, alpha<span class="op">=</span><span class="fl">0.85</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"black"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"log10( reported compute / 6ND )"</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"models"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="bu">len</span>(lang)<span class="sc">}</span><span class="ss"> language models; median ratio </span><span class="sc">{</span><span class="dv">10</span> <span class="op">**</span> ratio<span class="sc">.</span>median()<span class="sc">:.1f}</span><span class="ss">x; "</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"</span><span class="sc">{</span>(ratio.<span class="bu">abs</span>() <span class="op">&lt;=</span> np.log10(<span class="dv">3</span>))<span class="sc">.</span>mean()<span class="sc">:.0%}</span><span class="ss"> within a factor of 3, "</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"</span><span class="sc">{</span>(ratio.<span class="bu">abs</span>() <span class="op">&lt;=</span> <span class="dv">1</span>)<span class="sc">.</span>mean()<span class="sc">:.0%}</span><span class="ss"> within a factor of 10"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-6nd" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-6nd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="index_files/figure-html/fig-6nd-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Reported training compute divided by 6ND for language models, on a log10 scale. Zero means the rule is exact."><img src="index_files/figure-html/fig-6nd-output-1.png" width="760" height="375" class="figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-6nd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Reported training compute divided by 6ND for language models, on a log10 scale. Zero means the rule is exact.
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>200 language models; median ratio 3.2x; 32% within a factor of 3, 46% within a factor of 10</code></pre>
+</div>
+</div>
+<p>The typical language model reports about three times more compute than <span class="math inline">\(6ND\)</span> predicts, and only about half land within 10× of it. Several causes are known: training for more than one epoch, dataset sizes reported in words or documents rather than tokens, mixture-of-experts models where only a fraction of <span class="math inline">\(N\)</span> is active per token, and plain uncertainty in the estimates. <span class="math inline">\(6ND\)</span> is a useful feature, not a substitute for the label.</p>
+</section>
+<section id="a-leakage-aware-model-of-training-compute" class="level2">
+<h2 class="anchored" data-anchor-id="a-leakage-aware-model-of-training-compute">A leakage-aware model of training compute</h2>
+<p><strong>Task.</strong> Predict <code>log10(compute)</code> from information that is public when a model is announced: parameters, dataset size, the <span class="math inline">\(6ND\)</span> estimate, publication year, domain, organisation type, country and whether weights are open. The error is measured in orders of magnitude, so an MAE of 1.0 means a typical miss of 10×.</p>
+<p><strong>Leakage.</strong> Two columns look useful and must be dropped. <em>Frontier model</em> is defined by Epoch as being among the top models <em>by training compute</em>. <em>Training compute cost</em> is computed <em>from</em> training compute. Either one would give a great test score and a useless model.</p>
+<p><strong>Validation.</strong> The split is by time. The model trains on everything published before 2023 and is tested on 2023 onwards. A random split would let it learn from 2025 models when predicting 2022 ones, and deployment never offers that luxury. Hyperparameters are tuned with <code>TimeSeriesSplit</code> inside the training period only.</p>
+<div id="features" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_features(df):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> pd.DataFrame(index<span class="op">=</span>df.index)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    X[<span class="st">"log_params"</span>] <span class="op">=</span> np.log10(df[<span class="st">"params"</span>])</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    X[<span class="st">"log_tokens"</span>] <span class="op">=</span> np.log10(df[<span class="st">"tokens"</span>])</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    X[<span class="st">"log_6nd"</span>] <span class="op">=</span> np.log10(<span class="dv">6</span> <span class="op">*</span> df[<span class="st">"params"</span>] <span class="op">*</span> df[<span class="st">"tokens"</span>])</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    X[<span class="st">"year"</span>] <span class="op">=</span> df[<span class="st">"year"</span>]</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    X[<span class="st">"domain"</span>] <span class="op">=</span> df[<span class="st">"Domain"</span>].<span class="bu">str</span>.split(<span class="st">","</span>).<span class="bu">str</span>[<span class="dv">0</span>]</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    X[<span class="st">"org_type"</span>] <span class="op">=</span> df[<span class="st">"Organization categorization"</span>].<span class="bu">str</span>.split(<span class="st">","</span>).<span class="bu">str</span>[<span class="dv">0</span>].fillna(<span class="st">"Unknown"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    X[<span class="st">"country"</span>] <span class="op">=</span> df[<span class="st">"Country (of organization)"</span>].<span class="bu">str</span>.split(<span class="st">","</span>).<span class="bu">str</span>[<span class="dv">0</span>].fillna(<span class="st">"Unknown"</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    X[<span class="st">"open_weights"</span>] <span class="op">=</span> df[<span class="st">"Open model weights?"</span>].fillna(<span class="st">"Unknown"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>numeric <span class="op">=</span> [<span class="st">"log_params"</span>, <span class="st">"log_tokens"</span>, <span class="st">"log_6nd"</span>, <span class="st">"year"</span>]</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>categorical <span class="op">=</span> [<span class="st">"domain"</span>, <span class="st">"org_type"</span>, <span class="st">"country"</span>, <span class="st">"open_weights"</span>]</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>dl <span class="op">=</span> dl.sort_values(<span class="st">"date"</span>)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> build_features(dl), np.log10(dl[<span class="st">"compute"</span>])</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>train, test <span class="op">=</span> dl[<span class="st">"year"</span>] <span class="op">&lt;</span> <span class="dv">2023</span>, dl[<span class="st">"year"</span>] <span class="op">&gt;=</span> <span class="dv">2023</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> X[train], X[test], y[train], y[test]</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"train: </span><span class="sc">{</span>train<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss"> models (2010-2022)   test: </span><span class="sc">{</span>test<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss"> models (2023 onwards)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>train: 306 models (2010-2022)   test: 172 models (2023 onwards)</code></pre>
+</div>
+</div>
+<p><strong>Why trees need help here.</strong> Gradient-boosted trees predict with piecewise constants, so they cannot extrapolate. For any year after 2022 they answer as if it were 2022. The target, however, grows by roughly two orders of magnitude a year. The fix is to <strong>detrend</strong>. A linear regression on year captures the trend, and the trees model only what is left. <code>Detrended</code> below wraps any scikit-learn regressor this way, so it can be tuned with <code>GridSearchCV</code> like any other.</p>
+<div id="detrended" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Detrended(BaseEstimator, RegressorMixin):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Fit a linear trend on `year`, then fit `estimator` to the residuals."""</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, estimator):</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.estimator <span class="op">=</span> estimator</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fit(<span class="va">self</span>, X, y):</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.trend_ <span class="op">=</span> LinearRegression().fit(X[[<span class="st">"year"</span>]], y)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.estimator_ <span class="op">=</span> clone(<span class="va">self</span>.estimator).fit(X, y <span class="op">-</span> <span class="va">self</span>.trend_.predict(X[[<span class="st">"year"</span>]]))</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> predict(<span class="va">self</span>, X):</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.trend_.predict(X[[<span class="st">"year"</span>]]) <span class="op">+</span> <span class="va">self</span>.estimator_.predict(X)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>I compare five models. Two are baselines: the training <strong>median</strong>, and a <strong>trend-only</strong> regression on year. <strong>Ridge regression</strong> uses median imputation, missingness indicators and one-hot categories. <strong>Gradient boosting</strong> is fitted once on the raw target and once <strong>detrended</strong>. Boosting handles missing values natively and is tuned with time-series cross-validation.</p>
+<div id="fit-models" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>linear_prep <span class="op">=</span> ColumnTransformer([</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"num"</span>, make_pipeline(SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>, add_indicator<span class="op">=</span><span class="va">True</span>), StandardScaler()), numeric),</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"cat"</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>, min_frequency<span class="op">=</span><span class="dv">5</span>), categorical),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>tree_prep <span class="op">=</span> ColumnTransformer([</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"num"</span>, <span class="st">"passthrough"</span>, numeric),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"cat"</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>, min_frequency<span class="op">=</span><span class="dv">5</span>, sparse_output<span class="op">=</span><span class="va">False</span>), categorical),</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gbm():</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> make_pipeline(tree_prep, HistGradientBoostingRegressor(loss<span class="op">=</span><span class="st">"absolute_error"</span>, random_state<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>grid <span class="op">=</span> {</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"histgradientboostingregressor__max_depth"</span>: [<span class="dv">2</span>, <span class="dv">3</span>, <span class="va">None</span>],</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"histgradientboostingregressor__learning_rate"</span>: [<span class="fl">0.03</span>, <span class="fl">0.1</span>],</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"histgradientboostingregressor__max_iter"</span>: [<span class="dv">200</span>, <span class="dv">400</span>],</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> TimeSeriesSplit(n_splits<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>search_raw <span class="op">=</span> GridSearchCV(gbm(), grid, cv<span class="op">=</span>cv, scoring<span class="op">=</span><span class="st">"neg_mean_absolute_error"</span>).fit(X_train, y_train)</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>search_detrended <span class="op">=</span> GridSearchCV(</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    Detrended(gbm()), {<span class="ss">f"estimator__</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">"</span>: v <span class="cf">for</span> k, v <span class="kw">in</span> grid.items()},</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>cv, scoring<span class="op">=</span><span class="st">"neg_mean_absolute_error"</span>,</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>).fit(X_train, y_train)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>fitted <span class="op">=</span> {</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Median baseline"</span>: DummyRegressor(strategy<span class="op">=</span><span class="st">"median"</span>).fit(X_train, y_train),</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Trend-only baseline"</span>: Detrended(DummyRegressor(strategy<span class="op">=</span><span class="st">"constant"</span>, constant<span class="op">=</span><span class="dv">0</span>)).fit(X_train, y_train),</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ridge regression"</span>: make_pipeline(linear_prep, RidgeCV(alphas<span class="op">=</span>np.logspace(<span class="op">-</span><span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">20</span>))).fit(X_train, y_train),</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gradient boosting, raw target"</span>: search_raw.best_estimator_,</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gradient boosting, detrended"</span>: search_detrended.best_estimator_,</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"detrended boosting, best params:"</span>,</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>      {k.split(<span class="st">"__"</span>)[<span class="op">-</span><span class="dv">1</span>]: v <span class="cf">for</span> k, v <span class="kw">in</span> search_detrended.best_params_.items()})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>detrended boosting, best params: {'learning_rate': 0.03, 'max_depth': None, 'max_iter': 400}</code></pre>
+</div>
+</div>
+<p>The test set mixes two very different populations. Most models report their parameter count. A minority do not, and those are mostly large closed models. So the scores are split by that.</p>
+<div class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>known <span class="op">=</span> X_test[<span class="st">"log_params"</span>].notna()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> score(name, model):</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    err <span class="op">=</span> np.<span class="bu">abs</span>(y_test <span class="op">-</span> model.predict(X_test))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"model"</span>: name,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"MAE, all"</span>: <span class="bu">round</span>(err.mean(), <span class="dv">2</span>),</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"MAE, params known (n=</span><span class="sc">{</span>known<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss">)"</span>: <span class="bu">round</span>(err[known].mean(), <span class="dv">2</span>),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"MAE, params missing (n=</span><span class="sc">{</span>(<span class="op">~</span>known)<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss">)"</span>: <span class="bu">round</span>(err[<span class="op">~</span>known].mean(), <span class="dv">2</span>),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"within 10x"</span>: <span class="ss">f"</span><span class="sc">{</span>(err <span class="op">&lt;=</span> <span class="dv">1</span>)<span class="sc">.</span>mean()<span class="sc">:.0%}</span><span class="ss">"</span>}</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>pd.DataFrame([score(name, m) <span class="cf">for</span> name, m <span class="kw">in</span> fitted.items()])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-results" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="10">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-results-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Test error on models published from 2023 onwards. MAE is in orders of magnitude (log10 FLOP); 1.0 means a typical miss of 10x.
+</figcaption>
+<div aria-describedby="tbl-results-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe cell caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">model</th>
+<th data-quarto-table-cell-role="th">MAE, all</th>
+<th data-quarto-table-cell-role="th">MAE, params known (n=148)</th>
+<th data-quarto-table-cell-role="th">MAE, params missing (n=24)</th>
+<th data-quarto-table-cell-role="th">within 10x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Median baseline</td>
+<td>3.63</td>
+<td>3.59</td>
+<td>3.88</td>
+<td>6%</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Trend-only baseline</td>
+<td>1.32</td>
+<td>1.20</td>
+<td>2.00</td>
+<td>40%</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Ridge regression</td>
+<td>1.09</td>
+<td>0.82</td>
+<td>2.71</td>
+<td>61%</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Gradient boosting, raw target</td>
+<td>1.61</td>
+<td>1.30</td>
+<td>3.53</td>
+<td>41%</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Gradient boosting, detrended</td>
+<td>1.03</td>
+<td>0.84</td>
+<td>2.21</td>
+<td>64%</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Both baselines matter. The median is useless because compute keeps growing, and the trend on its own does much better. Raw boosting comes out <em>worse than ridge regression</em> because it cannot extrapolate. Detrending fixes that. It gives the best overall score and the smallest error on the hard rows, and it ties ridge where parameters are known. The gap between the two MAE columns is the main result. When the parameter count is public, a typical miss is well under an order of magnitude. When it is hidden, the model misses by two or more.</p>
+<p>For comparison, on the test rows where it can be computed, the <span class="math inline">\(6ND\)</span> rule on its own:</p>
+<div id="cell-physics-baseline" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> fitted[<span class="st">"Gradient boosting, detrended"</span>]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>has_6nd <span class="op">=</span> X_test[<span class="st">"log_6nd"</span>].notna()</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>err_6nd <span class="op">=</span> np.<span class="bu">abs</span>(y_test[has_6nd] <span class="op">-</span> X_test.loc[has_6nd, <span class="st">"log_6nd"</span>])</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>err_best <span class="op">=</span> np.<span class="bu">abs</span>(y_test[has_6nd] <span class="op">-</span> best.predict(X_test[has_6nd]))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({<span class="st">"MAE (log10)"</span>: [err_6nd.mean(), err_best.mean()],</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">"within 10x"</span>: [(err_6nd <span class="op">&lt;=</span> <span class="dv">1</span>).mean(), (err_best <span class="op">&lt;=</span> <span class="dv">1</span>).mean()]},</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>             index<span class="op">=</span>[<span class="ss">f"6ND rule (n=</span><span class="sc">{</span>has_6nd<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss">)"</span>, <span class="st">"Detrended boosting, same rows"</span>]).<span class="bu">round</span>(<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="physics-baseline" class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">MAE (log10)</th>
+<th data-quarto-table-cell-role="th">within 10x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6ND rule (n=103)</th>
+<td>1.08</td>
+<td>0.53</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Detrended boosting, same rows</th>
+<td>0.74</td>
+<td>0.79</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="what-the-model-relies-on" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-model-relies-on">What the model relies on</h2>
+<p>Permutation importance on the <strong>test</strong> set measures how much the error grows when one feature is shuffled. That shows what the model needs on data it has not seen, which the impurity scores computed during training cannot show.</p>
+<div id="cell-fig-importance" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>imp <span class="op">=</span> permutation_importance(best, X_test, y_test, scoring<span class="op">=</span><span class="st">"neg_mean_absolute_error"</span>,</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                             n_repeats<span class="op">=</span><span class="dv">30</span>, random_state<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>order <span class="op">=</span> np.argsort(imp.importances_mean)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">3.8</span>))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>ax.barh(np.array(X_test.columns)[order], imp.importances_mean[order],</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        xerr<span class="op">=</span>imp.importances_std[order], color<span class="op">=</span><span class="st">"#1b6ca8"</span>, alpha<span class="op">=</span><span class="fl">0.85</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Increase in test MAE (log10 FLOP)"</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-importance" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-importance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="index_files/figure-html/fig-importance-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Permutation importance of each input for the detrended boosting model on the 2023+ test set (increase in MAE when the feature is shuffled; mean and standard deviation over 30 repeats)."><img src="index_files/figure-html/fig-importance-output-1.png" width="736" height="391" class="figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-importance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Permutation importance of each input for the detrended boosting model on the 2023+ test set (increase in MAE when the feature is shuffled; mean and standard deviation over 30 repeats).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Parameters and year carry almost all of the signal. The surprise is that <code>log_tokens</code> and <code>log_6nd</code> have <em>negative</em> importance. Shuffling them makes the test error <strong>smaller</strong>. The model learned how dataset size related to compute before 2023, and that relationship changed afterwards. Recent models are routinely trained on far more tokens per parameter than their predecessors, and the data-size field mixes tokens, words and images across domains. That is a concrete case of distribution shift, and it can be tested directly: refit the same pipeline without the two features and see whether the test error drops.</p>
+<div id="cell-ablation" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>data_features <span class="op">=</span> [<span class="st">"log_tokens"</span>, <span class="st">"log_6nd"</span>]</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>ablated <span class="op">=</span> GridSearchCV(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    Detrended(make_pipeline(</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        ColumnTransformer([</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>            (<span class="st">"num"</span>, <span class="st">"passthrough"</span>, [c <span class="cf">for</span> c <span class="kw">in</span> numeric <span class="cf">if</span> c <span class="kw">not</span> <span class="kw">in</span> data_features]),</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>            (<span class="st">"cat"</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>, min_frequency<span class="op">=</span><span class="dv">5</span>, sparse_output<span class="op">=</span><span class="va">False</span>), categorical),</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>        ]),</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>        HistGradientBoostingRegressor(loss<span class="op">=</span><span class="st">"absolute_error"</span>, random_state<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    )),</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    {<span class="ss">f"estimator__</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">"</span>: v <span class="cf">for</span> k, v <span class="kw">in</span> grid.items()},</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>cv, scoring<span class="op">=</span><span class="st">"neg_mean_absolute_error"</span>,</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>).fit(X_train, y_train)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>pd.DataFrame([</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"features"</span>: <span class="st">"all"</span>, <span class="st">"CV MAE (train period)"</span>: <span class="op">-</span>search_detrended.best_score_,</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>     <span class="st">"test MAE"</span>: np.<span class="bu">abs</span>(y_test <span class="op">-</span> best.predict(X_test)).mean()},</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"features"</span>: <span class="st">"without dataset size and 6ND"</span>, <span class="st">"CV MAE (train period)"</span>: <span class="op">-</span>ablated.best_score_,</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>     <span class="st">"test MAE"</span>: np.<span class="bu">abs</span>(y_test <span class="op">-</span> ablated.predict(X_test)).mean()},</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>]).<span class="bu">round</span>(<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="ablation" class="cell-output cell-output-display" data-execution_count="13">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">features</th>
+<th data-quarto-table-cell-role="th">CV MAE (train period)</th>
+<th data-quarto-table-cell-role="th">test MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>all</td>
+<td>1.07</td>
+<td>1.03</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>without dataset size and 6ND</td>
+<td>1.12</td>
+<td>0.92</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The two scores disagree, and that disagreement is the signature of the shift. Inside the training period, the dataset-size features help (CV MAE 1.07 vs 1.12). On 2023+ models they hurt (test MAE 1.03 vs 0.92).</p>
+<p>This table is the honest version of feature selection. Cross-validation inside the training period is the only score that can pick features, because choosing by test score would leak the test set into the model. Test MAE is shown here to diagnose the shift, not to make the choice. I keep the full model as the main result, because it is the one the training-period evidence supports.</p>
+</section>
+<section id="where-it-fails" class="level2">
+<h2 class="anchored" data-anchor-id="where-it-fails">Where it fails</h2>
+<p>Aggregate scores hide the cases that matter. Below, test error is broken down by Epoch’s own confidence rating for each compute estimate, followed by the largest individual misses.</p>
+<div id="error-analysis" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> dl[test].assign(pred<span class="op">=</span>best.predict(X_test), err<span class="op">=</span><span class="kw">lambda</span> d: np.log10(d[<span class="st">"compute"</span>]) <span class="op">-</span> d[<span class="st">"pred"</span>])</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>by_conf <span class="op">=</span> (test_df.groupby(<span class="st">"Confidence"</span>)[<span class="st">"err"</span>]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>           .agg(models<span class="op">=</span><span class="st">"size"</span>, MAE<span class="op">=</span><span class="kw">lambda</span> e: e.<span class="bu">abs</span>().mean().<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>           .reindex([<span class="st">"Confident"</span>, <span class="st">"Likely"</span>, <span class="st">"Speculative"</span>]))</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>display(by_conf)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>worst <span class="op">=</span> (test_df.assign(abs_err<span class="op">=</span>test_df[<span class="st">"err"</span>].<span class="bu">abs</span>())</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>         .nlargest(<span class="dv">6</span>, <span class="st">"abs_err"</span>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>         [[<span class="st">"Model"</span>, <span class="st">"Organization"</span>, <span class="st">"params"</span>, <span class="st">"compute"</span>, <span class="st">"pred"</span>, <span class="st">"err"</span>]]</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>         .assign(compute<span class="op">=</span><span class="kw">lambda</span> d: d[<span class="st">"compute"</span>].<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1e}</span><span class="st">"</span>.<span class="bu">format</span>),</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>                 pred<span class="op">=</span><span class="kw">lambda</span> d: (<span class="dv">10</span> <span class="op">**</span> d[<span class="st">"pred"</span>]).<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1e}</span><span class="st">"</span>.<span class="bu">format</span>),</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>                 params<span class="op">=</span><span class="kw">lambda</span> d: d[<span class="st">"params"</span>].<span class="bu">map</span>(<span class="kw">lambda</span> p: <span class="st">"not disclosed"</span> <span class="cf">if</span> pd.isna(p) <span class="cf">else</span> <span class="ss">f"</span><span class="sc">{</span>p<span class="sc">:.1e}</span><span class="ss">"</span>),</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>                 err<span class="op">=</span><span class="kw">lambda</span> d: d[<span class="st">"err"</span>].<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>         .rename(columns<span class="op">=</span>{<span class="st">"compute"</span>: <span class="st">"actual FLOP"</span>, <span class="st">"pred"</span>: <span class="st">"predicted FLOP"</span>,</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>                          <span class="st">"err"</span>: <span class="st">"error (log10)"</span>}))</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>worst</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="error-analysis-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">models</th>
+<th data-quarto-table-cell-role="th">MAE</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Confidence</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Confident</th>
+<td>100</td>
+<td>0.80</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Likely</th>
+<td>51</td>
+<td>1.12</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Speculative</th>
+<td>21</td>
+<td>1.91</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="error-analysis-2" class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Model</th>
+<th data-quarto-table-cell-role="th">Organization</th>
+<th data-quarto-table-cell-role="th">params</th>
+<th data-quarto-table-cell-role="th">actual FLOP</th>
+<th data-quarto-table-cell-role="th">predicted FLOP</th>
+<th data-quarto-table-cell-role="th">error (log10)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">342</th>
+<td>PeptideBERT</td>
+<td>Carnegie Mellon University (CMU)</td>
+<td>not disclosed</td>
+<td>4.9e+16</td>
+<td>1.6e+21</td>
+<td>-4.51</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">172</th>
+<td>GPT-4.5</td>
+<td>OpenAI</td>
+<td>not disclosed</td>
+<td>3.8e+26</td>
+<td>3.9e+22</td>
+<td>3.99</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">295</th>
+<td>Gemini 1.0 Ultra</td>
+<td>Google DeepMind</td>
+<td>not disclosed</td>
+<td>5.0e+25</td>
+<td>8.1e+21</td>
+<td>3.79</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">340</th>
+<td>Swift</td>
+<td>Intel Labs</td>
+<td>5.7e+04</td>
+<td>5.3e+16</td>
+<td>2.9e+20</td>
+<td>-3.73</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">346</th>
+<td>AudioLM</td>
+<td>Google Research</td>
+<td>1.5e+09</td>
+<td>3.9e+18</td>
+<td>1.7e+22</td>
+<td>-3.65</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">8</th>
+<td>GPT-6 Astra</td>
+<td>OpenAI</td>
+<td>not disclosed</td>
+<td>1.0e+27</td>
+<td>3.0e+23</td>
+<td>3.52</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Errors grow steadily from “Confident” to “Speculative” labels. Part of what looks like model error is noise in the target itself.</p>
+<p>The largest misses fail in two opposite directions, and both come from the same cause. The year trend is a strong prior, and the model falls back on it when the size information is weak or missing.</p>
+<ul>
+<li><strong>Under-prediction of flagship closed models</strong> (GPT-4.5, Gemini 1.0 Ultra and others). Their parameter count is not disclosed. This is <strong>missing not at random</strong>: labs withhold size most often for their largest models, so median imputation plus a missingness flag cannot recover information that was hidden <em>because</em> it was large.</li>
+<li><strong>Over-prediction of small specialised models</strong> (a peptide model, a 57-thousand-parameter drone-racing controller, an audio model). Being published after 2023 pulls the prediction toward the frontier, even when the model is tiny.</li>
+</ul>
+<p>Doing better would take signals from outside this table, such as API pricing, context length or benchmark scores for closed models, rather than a fancier algorithm.</p>
+</section>
+<section id="what-i-found" class="level2">
+<h2 class="anchored" data-anchor-id="what-i-found">What I found</h2>
+<ul>
+<li><strong>Training compute for notable models doubles about every 6 months</strong>, and for language models about every 5. The bootstrap intervals are tight. Per-chip hardware in my <a href="../../posts/gpu-hardware-trends/index.html">memory-wall post</a> doubles about every 19 months, so most of the growth comes from larger clusters and longer runs, not faster chips.</li>
+<li><strong><span class="math inline">\(C \approx 6ND\)</span> is a rough guide, not a law.</strong> The typical language model reports about 3× more compute than it predicts, and only about half land within 10×.</li>
+<li><strong>Model choice has to match the extrapolation problem.</strong> With a time-based split, raw gradient boosting loses to ridge regression because trees cannot extrapolate. Detrending turns it into the best model.</li>
+<li><strong>The data-size features drifted.</strong> They help in cross-validation before 2023 and hurt afterwards. Permutation importance on held-out data caught this, and an ablation confirmed it.</li>
+<li><strong>Missing data is the real ceiling.</strong> When the parameter count is public, the typical miss is well under 10×, and on rows where <span class="math inline">\(6ND\)</span> exists the model beats the rule alone (MAE 0.74 vs 1.08). For flagship closed models it does not, and the reason is <em>why</em> the data is missing, not the choice of algorithm.</li>
+</ul>
+<p><strong>Caveats.</strong> The “notable” filter is Epoch’s editorial choice, so this is not a random sample of all models. Many compute labels are themselves estimates, some built from <span class="math inline">\(6ND\)</span>, which flatters the physics features. Speculative labels are the hardest to predict. Weighting training rows by label confidence is a natural next step.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+  // Give each photo in a .photo-row a flex-grow equal to its aspect ratio,
+  // so every photo in the row renders at exactly the same height without
+  // cropping. Recomputed from the real image, so swapping a photo just works.
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".photo-row > .photo-cell").forEach(function (cell) {
+      var img = cell.querySelector("img");
+      if (!img) return;
+      var apply = function () {
+        if (img.naturalWidth && img.naturalHeight) {
+          cell.style.flexGrow = img.naturalWidth / img.naturalHeight;
+        }
+      };
+      if (img.complete) apply(); else img.addEventListener("load", apply);
+    });
+  });
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/evanpai\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 Evan Pai</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
