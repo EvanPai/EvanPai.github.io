@@ -12,3 +12,6 @@
 .ipynb_checkpoints/
 __pycache__/
 .env
+
+# Python virtual environment (uv)
+.venv/
