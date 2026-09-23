@@ -154,7 +154,8 @@ util |>
   ggplot(aes(year, utilisation)) +
   annotate("rect", xmin = -Inf, xmax = Inf, ymin = 0.28, ymax = 0.42,
            fill = "#e09f3e", alpha = 0.18) +
-  geom_jitter(aes(size = chips), width = 0.25, height = 0, colour = "#1b6ca8", alpha = 0.6) +
+  geom_point(aes(size = chips), colour = "#1b6ca8", alpha = 0.6,
+             position = position_jitter(width = 0.25, height = 0, seed = 521)) +
   facet_wrap(~estimate, ncol = 1) +
   scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
   scale_size_area(max_size = 6, labels = scales::comma) +

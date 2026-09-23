@@ -571,11 +571,24 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span id="cb13-8">  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">geom_jitter</span>(<span class="fu" style="color: #4758AB;
+font-style: inherit;">geom_point</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">size =</span> chips), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#1b6ca8"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.6</span>,</span>
+<span id="cb13-9">             <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">position =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">position_jitter</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">width =</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -585,16 +598,12 @@ font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>, <span class="at" style="color: #657422;
 background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+font-style: inherit;">seed =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">"#1b6ca8"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.6</span>) <span class="sc" style="color: #5E5E5E;
+font-style: inherit;">521</span>)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb13-9">  <span class="fu" style="color: #4758AB;
+<span id="cb13-10">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -605,7 +614,7 @@ background-color: null;
 font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb13-10">  <span class="fu" style="color: #4758AB;
+<span id="cb13-11">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -622,7 +631,7 @@ background-color: null;
 font-style: inherit;">1</span>)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb13-11">  <span class="fu" style="color: #4758AB;
+<span id="cb13-12">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">scale_size_area</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -635,7 +644,7 @@ background-color: null;
 font-style: inherit;">::</span>comma) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb13-12">  <span class="fu" style="color: #4758AB;
+<span id="cb13-13">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -652,7 +661,7 @@ background-color: null;
 font-style: inherit;">"Chips"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb13-13">  <span class="fu" style="color: #4758AB;
+<span id="cb13-14">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">theme_minimal</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -1125,33 +1134,33 @@ Table&nbsp;1: Share of the 2010+ models with each field missing.
 <style type="text/css">
 </style>
 
-<table id="T_2bda6" class="cell caption-top table table-sm table-striped small">
+<table id="T_824a8" class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_2bda6_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">missing</th>
+<th id="T_824a8_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">missing</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th id="T_2bda6_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">Parameters</th>
-<td id="T_2bda6_row0_col0" class="data row0 col0">12%</td>
+<th id="T_824a8_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">Parameters</th>
+<td id="T_824a8_row0_col0" class="data row0 col0">12%</td>
 </tr>
 <tr class="even">
-<th id="T_2bda6_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">Training dataset size</th>
-<td id="T_2bda6_row1_col0" class="data row1 col0">20%</td>
+<th id="T_824a8_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">Training dataset size</th>
+<td id="T_824a8_row1_col0" class="data row1 col0">20%</td>
 </tr>
 <tr class="odd">
-<th id="T_2bda6_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">Training hardware</th>
-<td id="T_2bda6_row2_col0" class="data row2 col0">37%</td>
+<th id="T_824a8_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">Training hardware</th>
+<td id="T_824a8_row2_col0" class="data row2 col0">37%</td>
 </tr>
 <tr class="even">
-<th id="T_2bda6_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">Open weights flag</th>
-<td id="T_2bda6_row3_col0" class="data row3 col0">8%</td>
+<th id="T_824a8_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">Open weights flag</th>
+<td id="T_824a8_row3_col0" class="data row3 col0">8%</td>
 </tr>
 <tr class="odd">
-<th id="T_2bda6_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">Training cost</th>
-<td id="T_2bda6_row4_col0" class="data row4 col0">63%</td>
+<th id="T_824a8_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">Training cost</th>
+<td id="T_824a8_row4_col0" class="data row4 col0">63%</td>
 </tr>
 </tbody>
 </table>
