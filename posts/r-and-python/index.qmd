@@ -1,0 +1,199 @@
+---
+title: "How much of the GPU did they actually use? R and Python in one post"
+description: "Joining Epoch AI hardware specs (cleaned in R) with model records (processed in Python) to estimate how much of the GPU real training runs used, and catching a circular estimate before it became a finding. Data frames pass between the languages with reticulate."
+author: "Evan Pai"
+date: 2026-09-23
+categories: [R, Python, reticulate, HPC]
+engine: knitr
+---
+
+My [R post](../gpu-hardware-trends/index.qmd) looked at what accelerators *can*
+do. My [Python post](../ai-compute-scaling/index.qmd) looked at how much compute
+models *used*. This post joins the two to ask what every cluster engineer asks
+about a training run: **what fraction of the hardware's peak did it achieve?**
+
+That number, often called model FLOPs utilisation (MFU), can be estimated from
+public records:
+
+$$
+\text{utilisation} \approx \frac{\text{training compute (FLOP)}}
+{\text{chips} \times \text{peak FLOP/s per chip} \times \text{training time (s)}}.
+$$
+
+The work is split between the two languages. **R** cleans the hardware specs,
+using the same approach as the R post. **Python** reads the model records,
+joins them and computes utilisation. **R** then plots the result. Objects cross
+between them through [reticulate](https://rstudio.github.io/reticulate/): Python
+reads R objects as `r.name`, and R reads Python objects as `py$name`.
+
+**Data.** Two Epoch AI datasets, both licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/):
+[Data on Machine Learning Hardware](https://epoch.ai/data/machine-learning-hardware)
+and [Data on AI Models](https://epoch.ai/data/ai-models) (Epoch AI, published
+online at epoch.ai, accessed 23 Sep 2026). This post reuses the snapshots
+committed next to the two earlier posts, so no data is downloaded at build
+time.
+
+## Step 1 (R): clean the hardware table
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(reticulate)
+```
+
+```{r}
+#| label: r-hardware
+hardware <- read_csv("../gpu-hardware-trends/ml_hardware.csv", show_col_types = FALSE) |>
+  transmute(
+    hardware = `Hardware name`,
+    peak_flops = pmax(`Tensor-FP16/BF16 performance (FLOP/s)`,
+                      `FP16 (half precision) performance (FLOP/s)`,
+                      `FP32 (single precision) performance (FLOP/s)`, na.rm = TRUE)
+  ) |>
+  filter(!is.na(peak_flops), peak_flops > 0)
+
+nrow(hardware)
+```
+
+This is a plain R `data.frame`. The next chunk is Python and reads it directly
+as `r.hardware`.
+
+## Step 2 (Python): join model records and compute utilisation
+
+```{python}
+#| label: py-environment
+import sys
+print(sys.executable)  # should be this project's .venv
+```
+
+```{python}
+#| label: py-join
+import numpy as np
+import pandas as pd
+
+hardware = r.hardware  # the R data frame, now a pandas DataFrame
+print(type(hardware).__name__, hardware.shape)
+
+models = pd.read_csv("../ai-compute-scaling/notable_ai_models.csv")
+runs = models.dropna(subset=["Training compute (FLOP)", "Training hardware",
+                             "Hardware quantity", "Training time (hours)"]).copy()
+runs["year"] = pd.to_datetime(runs["Publication date"]).dt.year
+matched = runs.merge(hardware, left_on="Training hardware", right_on="hardware", how="inner")
+print(f"{len(runs)} runs with compute, hardware, chip count and time; "
+      f"{len(matched)} match a chip in the hardware table")
+
+matched["utilisation"] = matched["Training compute (FLOP)"] / (
+    matched["Hardware quantity"] * matched["peak_flops"] * matched["Training time (hours)"] * 3600
+)
+matched["plausible"] = matched["utilisation"].between(0.01, 1.0)
+```
+
+### A circularity check before trusting the answer
+
+A first plot of these numbers showed a suspicious pile-up just above 30%. Epoch's
+`Training compute notes` column explains it. When a lab does not report compute,
+Epoch often **estimates it from the hardware**, as chips × peak × time × an
+*assumed* utilisation, usually 30–40%. For those rows, the formula above just
+returns Epoch's assumption. It is circular.
+
+So before measuring anything, I tag each run by how its compute was estimated.
+If the notes mention an assumed utilisation or an "estimate from hardware", the
+run is tagged *hardware-based*. The others are *independent*: reported by the
+developer, or counted from parameters and tokens. Only the independent runs say
+anything about real utilisation. The tagging is a keyword heuristic, so it is
+approximate. The pattern is written out below so it can be checked.
+
+```{python}
+#| label: py-circularity
+assumed_pattern = (
+    r"assum\w*[^.]{0,80}utili[sz]\w*"        # "30% utilization assumed", "assume 0.4 utilization"
+    r"|utili[sz]\w*[^.]{0,40}assum\w*"
+    r"|\d+\s*% (?:hardware )?utili[sz]\w*"   # "30% utilization"
+    r"|0\.\d+ ?(?:hardware )?utili[sz]\w*"   # "0.3 utilization"
+    r"|utili[sz]ation rate of"
+    r"|hardware details|estimate from hardware"
+)
+notes = matched["Training compute notes"].fillna("")
+matched["estimate"] = np.where(
+    notes.str.contains(assumed_pattern, case=False, regex=True),
+    "Hardware-based (utilisation assumed)",
+    "Independent (reported or counted)",
+)
+
+utilisation = matched[["Model", "year", "hardware", "Hardware quantity", "utilisation",
+                       "plausible", "estimate"]].rename(columns={"Hardware quantity": "chips"})
+utilisation.groupby("estimate").agg(
+    runs=("utilisation", "size"),
+    flagged_implausible=("plausible", lambda p: int((~p).sum())),
+)
+```
+
+Runs outside 1–100% are flagged, not dropped. An estimate above 100% is
+physically impossible, so at least one input must be off. Common causes are a
+run trained in FP8 measured against a 16-bit peak, a chip count that includes
+idle spares, or a training time that leaves out restarts.
+
+## Step 3 (R): plot what Python computed
+
+Back in R, `py$utilisation` is the pandas DataFrame from Step 2, converted to an
+R `data.frame`.
+
+```{r}
+#| label: fig-utilisation
+#| fig-cap: "Estimated hardware utilisation of training runs, computed in Python and plotted in R, split by how Epoch estimated each run's compute. Only plausible runs (1–100%) are shown. The shaded band is 28–42%, the range of utilisation values Epoch typically assumes."
+util <- py$utilisation
+
+util |>
+  filter(plausible) |>
+  ggplot(aes(year, utilisation)) +
+  annotate("rect", xmin = -Inf, xmax = Inf, ymin = 0.28, ymax = 0.42,
+           fill = "#e09f3e", alpha = 0.18) +
+  geom_jitter(aes(size = chips), width = 0.25, height = 0, colour = "#1b6ca8", alpha = 0.6) +
+  facet_wrap(~estimate, ncol = 1) +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  scale_size_area(max_size = 6, labels = scales::comma) +
+  labs(x = "Publication year", y = "Estimated utilisation", size = "Chips") +
+  theme_minimal(base_size = 12)
+```
+
+```{r}
+#| label: r-summary
+util |>
+  filter(plausible) |>
+  group_by(estimate) |>
+  summarise(
+    runs = n(),
+    median = scales::percent(median(utilisation), accuracy = 1),
+    `middle 50%` = paste(scales::percent(quantile(utilisation, c(0.25, 0.75)), accuracy = 1),
+                         collapse = " to "),
+    `inside the 28–42% band` = scales::percent(mean(between(utilisation, 0.28, 0.42)), accuracy = 1),
+    `median chips` = median(chips)
+  ) |>
+  kable(caption = "Utilisation of plausible runs, by how the run's compute was estimated.")
+```
+
+## What I found
+
+- **Half the data would have answered with its own assumption.** More than
+  half of the runs that can be joined have compute estimated from the hardware,
+  and most of them land inside the assumed 28–42% band. A naive analysis would
+  have "discovered" that training runs achieve about 30% utilisation, which is
+  exactly what was put in.
+- **The independent runs are more informative, and they are wider.** Their
+  median is also close to 30%, so Epoch's default is a reasonable prior. The
+  spread is much larger, though. Real runs range from well under 20% to over 50%,
+  and that spread is where a cluster team's engineering work shows up.
+- **Physical bounds are a cheap data check.** Requiring 1–100% utilisation caught
+  inconsistent records that a purely statistical filter would have kept.
+
+**How the languages split the work.** R's `pmax(..., na.rm = TRUE)` made the
+"best available precision" rule a one-liner. pandas handled the join, the regex
+tagging and the arithmetic. ggplot2 drew facets from a data frame created in
+Python. Nothing was written to disk between steps. The objects passed in memory
+through `r.hardware` and `py$utilisation`.
