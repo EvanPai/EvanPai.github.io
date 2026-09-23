@@ -1,0 +1,280 @@
+---
+title: "The memory wall, measured: 18 years of ML accelerators"
+description: "Peak compute on AI chips doubles almost twice as fast as memory bandwidth, and tensor cores cause the whole gap. A trend analysis in R, and what it means for LLM inference."
+author: "Evan Pai"
+date: 2026-09-21
+categories: [R, hardware, HPC, data analysis]
+execute:
+  echo: true
+---
+
+Every GPU launch comes with a headline FLOP/s number, and every generation that
+number jumps. When I was tuning LLM inference on H100s, though, the question
+that kept coming up was how fast weights could be pulled out of memory, not how
+fast they could be multiplied. This post checks that intuition against data: across every
+ML accelerator Epoch AI has catalogued, how fast has peak compute grown, how fast
+has memory bandwidth grown, and how wide is the gap now?
+
+**Data.** [Data on Machine Learning Hardware](https://epoch.ai/data/machine-learning-hardware)
+by Epoch AI, licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Citation: Epoch AI,
+"Data on Machine Learning Hardware". Published online at epoch.ai. Retrieved from
+<https://epoch.ai/data/machine-learning-hardware> [online resource]. Accessed
+23 Sep 2026. The dataset is updated continuously, so I committed the snapshot
+downloaded on 23 September 2026 (`ml_hardware.csv`, about 100 KB) next to this post.
+That way the numbers below do not change between builds.
+
+## Loading the data
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+library(knitr)
+```
+
+```{r}
+#| label: load
+hardware_raw <- read_csv("ml_hardware.csv", show_col_types = FALSE)
+dim(hardware_raw)
+```
+
+Each row is one chip: 176 accelerators, with 39 columns of specs. Most of those
+columns are sparsely filled. Vendors publish different numbers, and precision
+formats change between generations. So the first job is to decide which columns
+to trust and what to do when one is missing.
+
+## Cleaning: one comparable "peak compute" number per chip
+
+Chips before 2017 have no tensor cores, and many recent chips only publish
+tensor-core numbers. I keep three columns: tensor FP16/BF16, plain FP16 and
+FP32. The headline "peak" is the **largest** of the three. Taking the largest
+rather than preferring 16-bit matters. Consumer Pascal cards from 2016 run FP16
+at 1/64 of their FP32 rate, so preferring 16-bit would record those chips as
+roughly 60× slower than they really are. The `precision` column records which
+format supplied the peak, so the mix stays visible.
+
+```{r}
+#| label: clean
+hardware <- hardware_raw |>
+  transmute(
+    name         = `Hardware name`,
+    manufacturer = Manufacturer,
+    type         = Type,
+    release      = as.Date(`Release date`),
+    tensor16     = `Tensor-FP16/BF16 performance (FLOP/s)`,
+    fp16         = `FP16 (half precision) performance (FLOP/s)`,
+    fp32         = `FP32 (single precision) performance (FLOP/s)`,
+    bandwidth    = `Memory bandwidth (byte/s)`,
+    memory       = `Memory (bytes)`,
+    price        = `Release price (USD)`
+  ) |>
+  mutate(
+    peak = pmax(tensor16, fp16, fp32, na.rm = TRUE),
+    precision = case_when(
+      peak == tensor16 ~ "Tensor FP16/BF16",
+      peak == fp16     ~ "FP16",
+      peak == fp32     ~ "FP32",
+      .default         = NA_character_
+    ),
+    year = as.numeric(format(release, "%Y")) +
+      (as.numeric(format(release, "%j")) - 1) / 365.25
+  ) |>
+  filter(!is.na(release), peak > 0 | bandwidth > 0)
+
+hardware |>
+  summarise(
+    chips = n(),
+    first_release = min(release),
+    last_release = max(release),
+    with_peak = sum(!is.na(peak) & peak > 0),
+    with_bandwidth = sum(!is.na(bandwidth)),
+    with_both = sum(!is.na(peak) & peak > 0 & !is.na(bandwidth))
+  ) |>
+  kable(caption = "Coverage of the cleaned hardware table.")
+```
+
+## Compute and bandwidth over time
+
+```{r}
+#| label: fig-compute-vs-bandwidth
+#| fig-cap: "Peak compute (FLOP/s) and memory bandwidth (byte/s) of ML accelerators by release date, on a log scale. Lines are least-squares fits of log2(value) on release year."
+#| fig-width: 8
+#| fig-height: 4.8
+trend_data <- hardware |>
+  select(name, year, `Peak compute (FLOP/s)` = peak,
+         `Memory bandwidth (byte/s)` = bandwidth) |>
+  pivot_longer(-c(name, year), names_to = "metric", values_to = "value") |>
+  filter(!is.na(value), value > 0)
+
+ggplot(trend_data, aes(year, value, colour = metric)) +
+  geom_point(alpha = 0.6, size = 1.8) +
+  geom_smooth(method = "lm", formula = y ~ x, se = TRUE, linewidth = 0.9) +
+  scale_y_log10(labels = label_log()) +
+  scale_colour_manual(values = c("#1b6ca8", "#d1495b")) +
+  labs(x = "Release year", y = NULL, colour = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top")
+```
+
+The two clouds in @fig-compute-vs-bandwidth start about three orders of
+magnitude apart and drift further apart every year. The slopes can be turned into
+a number that is easier to reason about: the **doubling time**. If
+`log2(value) = a + b * year`, then the value doubles every `1 / b` years. I fit
+one regression per metric and turn the 95% confidence interval on `b` into an
+interval on the doubling time.
+
+```{r}
+#| label: doubling-times
+doubling <- function(df, column) {
+  d <- df |> filter(!is.na(.data[[column]]), .data[[column]] > 0)
+  fit <- lm(log2(d[[column]]) ~ d$year)
+  slope <- coef(fit)[2]
+  ci <- confint(fit)[2, ]
+  tibble(
+    n = nrow(d),
+    `growth per year` = sprintf("%.2fx", 2^slope),
+    `doubling time (years)` = sprintf("%.2f", 1 / slope),
+    `95% CI` = sprintf("%.2f to %.2f", 1 / ci[2], 1 / ci[1])
+  )
+}
+
+doubling_table <- bind_rows(
+  `Peak compute, any format`          = doubling(hardware, "peak"),
+  `FP32 compute only`                 = doubling(hardware, "fp32"),
+  `Memory bandwidth`                  = doubling(hardware, "bandwidth"),
+  `Memory capacity`                   = doubling(hardware, "memory"),
+  .id = "metric"
+)
+kable(doubling_table, caption = "Doubling times from log-linear fits over all chips with a release date.")
+```
+
+Peak compute doubles about every year and a half. Memory bandwidth and capacity
+take close to three years. The FP32-only row was meant as a robustness check,
+and it changed my reading of the result. **FP32 compute has grown at almost
+exactly the same rate as bandwidth.** The confidence intervals overlap almost
+completely. On the chips' traditional arithmetic path, the memory wall does not
+exist in this data. The entire gap comes from the tensor cores and lower-precision
+formats that vendors added from 2017 onward. So the memory wall is not a law of
+silicon. It is a consequence of the industry spending its transistor budget on
+dense low-precision matrix units.
+
+## What the gap means: the roofline ridge point
+
+The roofline model gives this gap a concrete meaning. A kernel with
+*arithmetic intensity* $I$ (FLOPs performed per byte moved from memory) can run
+at most at $\min(\text{peak},\ I \times \text{bandwidth})$. The crossover
+$I^\ast = \text{peak} / \text{bandwidth}$ is the **ridge point**. Kernels below
+it are memory-bound and kernels above it are compute-bound. If compute grows
+faster than bandwidth, the ridge point moves right, and more real workloads end
+up memory-bound. @fig-ridge-point and the table below show exactly that
+happening, in step with the spread of tensor cores.
+
+```{r}
+#| label: fig-ridge-point
+#| fig-cap: "Ridge point (peak FLOP/s divided by memory bandwidth) of each accelerator. A kernel needs at least this many FLOPs per byte of memory traffic to be compute-bound. Labelled points are data-centre flagships."
+#| fig-width: 8
+#| fig-height: 4.8
+flagships <- c(
+  "NVIDIA Tesla V100 SXM2 16 GB", "NVIDIA A100 SXM4 80 GB",
+  "NVIDIA H100 SXM5 80GB", "NVIDIA B200", "NVIDIA GB300 (Blackwell Ultra)",
+  "AMD Instinct MI300X", "AMD Instinct MI355X",
+  "Google TPU v3", "Google TPU v4", "Google TPU v7 Ironwood"
+)
+
+ridge <- hardware |>
+  filter(!is.na(peak), peak > 0, !is.na(bandwidth)) |>
+  mutate(ridge = peak / bandwidth, flagship = name %in% flagships)
+labelled <- c("NVIDIA Tesla V100 SXM2 16 GB", "NVIDIA H100 SXM5 80GB",
+              "NVIDIA GB300 (Blackwell Ultra)")
+
+ggplot(ridge, aes(year, ridge)) +
+  geom_point(aes(colour = precision), alpha = 0.7, size = 2) +
+  geom_text(
+    data = filter(ridge, name %in% labelled),
+    aes(label = sub(" \\(.*\\)", "", sub("NVIDIA (Tesla )?", "", name))),
+    size = 3, vjust = -1, hjust = 0.8
+  ) +
+  scale_y_log10() +
+  scale_colour_manual(values = c("#8a8a8a", "#e09f3e", "#1b6ca8")) +
+  labs(x = "Release year", y = "FLOPs per byte (log scale)", colour = "Peak measured as") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top")
+```
+
+```{r}
+#| label: ridge-by-era
+ridge |>
+  mutate(era = cut(year, c(2008, 2016, 2020, 2023, 2027), right = FALSE,
+                   labels = c("2008–2015", "2016–2019", "2020–2022", "2023–2026"))) |>
+  group_by(era) |>
+  summarise(
+    chips = n(),
+    `median ridge (FLOP/byte)` = round(median(ridge)),
+    `share with tensor-core peak` = percent(mean(precision == "Tensor FP16/BF16"))
+  ) |>
+  kable(caption = "Median ridge point by release era.")
+```
+
+## Consequence for LLM inference
+
+The ridge point explains something every LLM serving engineer runs into. When
+you generate one token at batch size 1, every weight is read once and used for
+about two FLOPs (one multiply, one add). With 16-bit weights that is 2 bytes per
+parameter, so the arithmetic intensity is roughly **1 FLOP per byte**. The
+flagships above have ridge points in the hundreds. Single-stream decoding
+therefore uses well under 1% of the chip's peak compute, and memory bandwidth
+sets the speed limit:
+
+$$
+\text{tokens/s} \;\le\; \frac{\text{bandwidth}}{2 \times \text{parameters}}.
+$$
+
+```{r}
+#| label: decode-bound
+params <- 70e9  # a 70B-parameter model in 16-bit weights
+
+ridge |>
+  filter(flagship) |>
+  arrange(release) |>
+  transmute(
+    chip = name,
+    released = format(release, "%Y-%m"),
+    `peak (TFLOP/s)` = round(peak / 1e12),
+    `bandwidth (TB/s)` = round(bandwidth / 1e12, 2),
+    `ridge (FLOP/byte)` = round(ridge),
+    `70B decode ceiling (tok/s, batch 1)` = round(bandwidth / (2 * params), 1),
+    `peak compute used at batch 1` = percent(1 / ridge, accuracy = 0.01)
+  ) |>
+  kable(caption = "Bandwidth-bound decode ceiling for a 70B model on one chip, ignoring KV-cache traffic and assuming the weights fit.")
+```
+
+This is why serving systems like vLLM work so hard on **batching**. With a
+batch of $B$ sequences, each weight read from memory is used $B$ times, so
+arithmetic intensity grows roughly linearly in $B$. The batch can climb toward
+the ridge point before compute becomes the limit. Continuous batching was one
+of the main levers when I tuned a LLaMA 3.1 70B chatbot on H100s for
+throughput, and this table shows why.
+
+## What I found
+
+- Across 18 years of accelerators, **peak compute doubled every ~1.6 years
+  against ~2.8 years for memory bandwidth**.
+- **The gap comes from tensor cores.** FP32 compute kept pace with bandwidth. The
+  divergence is the low-precision matrix hardware added since 2017.
+- The **median ridge point rose from 17 to over 200 FLOPs per byte**, more than
+  an order of magnitude. A kernel now needs far more reuse of each byte before it
+  can use the chip it runs on.
+- For LLM decoding at small batch sizes, that makes **bandwidth, not FLOP/s,
+  the number to read on a spec sheet**, and batching, KV-cache layout and
+  quantisation the levers that matter.
+
+**Caveats.** These are vendor peak specs, not measured throughput. Each chip
+counts once however widely it was deployed. The log-linear fit treats a
+consumer card and a TPU pod chip as the same kind of point. A deployment-weighted
+analysis would be a natural next step.
