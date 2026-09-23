@@ -1,0 +1,466 @@
+---
+title: "Predicting the compute behind an AI model, without leaking the answer"
+description: "Training compute for notable AI models doubles about every six months. I measure the trend with bootstrap intervals, test the C ≈ 6ND rule, then build a leakage-aware model validated on models released after its training cut-off, and find where it breaks."
+author: "Evan Pai"
+date: 2026-09-22
+categories: [Python, machine learning, scaling laws, data analysis]
+jupyter: python3
+---
+
+Labs rarely say how much compute a new model took. They do often say how many
+parameters it has, roughly how much data it saw, and who built it. This post asks
+two questions. How fast is training compute growing? And how well can it be
+estimated from the details that *are* public? The second one is a small but
+realistic ML problem. The labels are noisy, a third of the features are missing,
+two tempting columns leak the answer, and the model has to hold up on models
+released after the training data ends.
+
+**Data.** [Data on AI Models](https://epoch.ai/data/ai-models) by Epoch AI
+(the *Notable AI Models* table), licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Citation: Epoch AI,
+"Data on AI Models". Published online at epoch.ai. Retrieved from
+<https://epoch.ai/data/ai-models> [online resource]. Accessed 23 Sep 2026. The
+table is updated daily, so I committed the snapshot downloaded on 23 September
+2026 (`notable_ai_models.csv`, about 2.2 MB) next to this post. That keeps the
+numbers below reproducible.
+
+## Setup
+
+```{python}
+#| label: setup
+#| warning: false
+import sys
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from IPython.display import display
+from sklearn.base import BaseEstimator, RegressorMixin, clone
+from sklearn.compose import ColumnTransformer
+from sklearn.dummy import DummyRegressor
+from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.impute import SimpleImputer
+from sklearn.inspection import permutation_importance
+from sklearn.linear_model import LinearRegression, RidgeCV
+from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+plt.rcParams.update({"figure.dpi": 110, "axes.spines.top": False, "axes.spines.right": False})
+rng = np.random.default_rng(521)
+
+# Confirms the render used this project's uv environment, not a global Python.
+print(sys.executable)
+```
+
+## Loading and cleaning
+
+```{python}
+#| label: load
+raw = pd.read_csv("notable_ai_models.csv")
+
+models = raw.assign(
+    date=pd.to_datetime(raw["Publication date"]),
+    compute=raw["Training compute (FLOP)"],
+    params=raw["Parameters"],
+    # a handful of rows list several dataset sizes as "a,b"; those become NaN
+    tokens=pd.to_numeric(raw["Training dataset size (total)"], errors="coerce"),
+)
+models["year"] = models["date"].dt.year + (models["date"].dt.dayofyear - 1) / 365.25
+
+# Deep-learning era, and only rows where the target is known.
+dl = models[(models["year"] >= 2010) & models["compute"].notna()].copy()
+print(f"{len(raw)} notable models in total, {len(dl)} since 2010 with a compute estimate")
+```
+
+Missing values are the main data problem, so I measure them before modelling
+anything.
+
+```{python}
+#| label: tbl-missing
+#| tbl-cap: "Share of the 2010+ models with each field missing."
+cols = {
+    "params": "Parameters",
+    "tokens": "Training dataset size",
+    "Training hardware": "Training hardware",
+    "Open model weights?": "Open weights flag",
+    "Training compute cost (2023 USD)": "Training cost",
+}
+(dl[list(cols)].isna().mean().rename(index=cols).to_frame("missing")
+   .style.format("{:.0%}"))
+```
+
+## How fast is training compute growing?
+
+I regress `log10(compute)` on publication year. The slope $b$ is in orders of
+magnitude per year, so the doubling time is $\log_{10} 2 / b$ years. The data
+are uneven (many models from 2020 onwards, few from early years) and the
+residuals are far from normal. So instead of trusting the textbook standard
+error, I bootstrap: refit on 2,000 resampled datasets and take the 2.5th and
+97.5th percentiles of the doubling time.
+
+```{python}
+#| label: doubling
+def doubling_months(df):
+    slope = np.polyfit(df["year"], np.log10(df["compute"]), 1)[0]
+    return 12 * np.log10(2) / slope
+
+def bootstrap(df, n=2000):
+    idx = rng.integers(0, len(df), size=(n, len(df)))
+    return np.array([doubling_months(df.iloc[i]) for i in idx])
+
+subsets = {
+    "All domains": dl,
+    "Language": dl[dl["Domain"] == "Language"],
+    "Vision": dl[dl["Domain"] == "Vision"],
+}
+rows = []
+for name, df in subsets.items():
+    boots = bootstrap(df)
+    lo, hi = np.percentile(boots, [2.5, 97.5])
+    rows.append({"subset": name, "models": len(df),
+                 "doubling time (months)": round(doubling_months(df), 1),
+                 "95% bootstrap CI": f"{lo:.1f} to {hi:.1f}"})
+pd.DataFrame(rows)
+```
+
+```{python}
+#| label: fig-compute-trend
+#| fig-cap: "Training compute of notable AI models since 2010 (log scale), coloured by domain. The line is the least-squares fit on all domains."
+domain_group = dl["Domain"].where(dl["Domain"].isin(["Language", "Vision", "Games"]), "Other / multimodal")
+fig, ax = plt.subplots(figsize=(8, 4.6))
+for (name, df), colour in zip(dl.groupby(domain_group), ["#e09f3e", "#d1495b", "#8a8a8a", "#1b6ca8"]):
+    ax.scatter(df["year"], df["compute"], s=14, alpha=0.65, label=name, color=colour)
+b, a = np.polyfit(dl["year"], np.log10(dl["compute"]), 1)
+xs = np.linspace(dl["year"].min(), dl["year"].max(), 100)
+ax.plot(xs, 10 ** (a + b * xs), color="black", lw=1.5)
+ax.set_yscale("log")
+ax.set_xlabel("Publication year")
+ax.set_ylabel("Training compute (FLOP)")
+ax.legend(frameon=False, loc="upper left")
+plt.show()
+```
+
+Compute doubles roughly every six months. That is about three times faster
+than the hardware trend in my
+[memory-wall post](../gpu-hardware-trends/index.qmd), where peak FLOP/s per chip
+doubles about every 1.6 years. Most of the growth therefore comes from using
+*more chips for longer*, not from faster chips.
+
+## Does C ≈ 6ND hold?
+
+For dense transformers, training compute is often approximated as
+$C \approx 6ND$: $N$ parameters, $D$ training tokens, and 6 FLOPs per parameter
+per token (2 for the forward pass, 4 for the backward pass). If that holds, the
+two public numbers alone would almost pin down the answer. I check it on the
+language models that report all three quantities.
+
+```{python}
+#| label: fig-6nd
+#| fig-cap: "Reported training compute divided by 6ND for language models, on a log10 scale. Zero means the rule is exact."
+lang = dl[(dl["Domain"] == "Language") & dl["params"].notna() & dl["tokens"].notna()]
+ratio = np.log10(lang["compute"] / (6 * lang["params"] * lang["tokens"]))
+
+fig, ax = plt.subplots(figsize=(8, 3.6))
+ax.hist(ratio, bins=40, color="#1b6ca8", alpha=0.85)
+ax.axvline(0, color="black", lw=1)
+ax.set_xlabel("log10( reported compute / 6ND )")
+ax.set_ylabel("models")
+plt.show()
+
+print(f"{len(lang)} language models; median ratio {10 ** ratio.median():.1f}x; "
+      f"{(ratio.abs() <= np.log10(3)).mean():.0%} within a factor of 3, "
+      f"{(ratio.abs() <= 1).mean():.0%} within a factor of 10")
+```
+
+The typical language model reports about three times more compute than $6ND$
+predicts, and only about half land within 10× of it. Several causes are known:
+training for more than one epoch, dataset sizes reported in words or documents
+rather than tokens, mixture-of-experts models where only a fraction of $N$ is
+active per token, and plain uncertainty in the estimates. $6ND$ is a useful
+feature, not a substitute for the label.
+
+## A leakage-aware model of training compute
+
+**Task.** Predict `log10(compute)` from information that is public when a model
+is announced: parameters, dataset size, the $6ND$ estimate, publication year,
+domain, organisation type, country and whether weights are open. The error is
+measured in orders of magnitude, so an MAE of 1.0 means a typical miss of 10×.
+
+**Leakage.** Two columns look useful and must be dropped. *Frontier model*
+is defined by Epoch as being among the top models *by training compute*.
+*Training compute cost* is computed *from* training compute. Either one would
+give a great test score and a useless model.
+
+**Validation.** The split is by time. The model trains on everything published
+before 2023 and is tested on 2023 onwards. A random split would let it learn
+from 2025 models when predicting 2022 ones, and deployment never offers that
+luxury. Hyperparameters are tuned with `TimeSeriesSplit` inside the training
+period only.
+
+```{python}
+#| label: features
+def build_features(df):
+    X = pd.DataFrame(index=df.index)
+    X["log_params"] = np.log10(df["params"])
+    X["log_tokens"] = np.log10(df["tokens"])
+    X["log_6nd"] = np.log10(6 * df["params"] * df["tokens"])
+    X["year"] = df["year"]
+    X["domain"] = df["Domain"].str.split(",").str[0]
+    X["org_type"] = df["Organization categorization"].str.split(",").str[0].fillna("Unknown")
+    X["country"] = df["Country (of organization)"].str.split(",").str[0].fillna("Unknown")
+    X["open_weights"] = df["Open model weights?"].fillna("Unknown")
+    return X
+
+numeric = ["log_params", "log_tokens", "log_6nd", "year"]
+categorical = ["domain", "org_type", "country", "open_weights"]
+
+dl = dl.sort_values("date")
+X, y = build_features(dl), np.log10(dl["compute"])
+train, test = dl["year"] < 2023, dl["year"] >= 2023
+X_train, X_test, y_train, y_test = X[train], X[test], y[train], y[test]
+print(f"train: {train.sum()} models (2010-2022)   test: {test.sum()} models (2023 onwards)")
+```
+
+**Why trees need help here.** Gradient-boosted trees predict with piecewise
+constants, so they cannot extrapolate. For any year after 2022 they answer as if
+it were 2022. The target, however, grows by roughly two orders of magnitude a
+year. The fix is to **detrend**. A linear regression on year captures the trend,
+and the trees model only what is left. `Detrended` below wraps any scikit-learn
+regressor this way, so it can be tuned with `GridSearchCV` like any other.
+
+```{python}
+#| label: detrended
+class Detrended(BaseEstimator, RegressorMixin):
+    """Fit a linear trend on `year`, then fit `estimator` to the residuals."""
+
+    def __init__(self, estimator):
+        self.estimator = estimator
+
+    def fit(self, X, y):
+        self.trend_ = LinearRegression().fit(X[["year"]], y)
+        self.estimator_ = clone(self.estimator).fit(X, y - self.trend_.predict(X[["year"]]))
+        return self
+
+    def predict(self, X):
+        return self.trend_.predict(X[["year"]]) + self.estimator_.predict(X)
+```
+
+I compare five models. Two are baselines: the training **median**, and a
+**trend-only** regression on year. **Ridge regression** uses median imputation,
+missingness indicators and one-hot categories. **Gradient boosting** is fitted
+once on the raw target and once **detrended**. Boosting handles missing values
+natively and is tuned with time-series cross-validation.
+
+```{python}
+#| label: fit-models
+linear_prep = ColumnTransformer([
+    ("num", make_pipeline(SimpleImputer(strategy="median", add_indicator=True), StandardScaler()), numeric),
+    ("cat", OneHotEncoder(handle_unknown="ignore", min_frequency=5), categorical),
+])
+tree_prep = ColumnTransformer([
+    ("num", "passthrough", numeric),
+    ("cat", OneHotEncoder(handle_unknown="ignore", min_frequency=5, sparse_output=False), categorical),
+])
+
+def gbm():
+    return make_pipeline(tree_prep, HistGradientBoostingRegressor(loss="absolute_error", random_state=0))
+
+grid = {
+    "histgradientboostingregressor__max_depth": [2, 3, None],
+    "histgradientboostingregressor__learning_rate": [0.03, 0.1],
+    "histgradientboostingregressor__max_iter": [200, 400],
+}
+cv = TimeSeriesSplit(n_splits=5)
+search_raw = GridSearchCV(gbm(), grid, cv=cv, scoring="neg_mean_absolute_error").fit(X_train, y_train)
+search_detrended = GridSearchCV(
+    Detrended(gbm()), {f"estimator__{k}": v for k, v in grid.items()},
+    cv=cv, scoring="neg_mean_absolute_error",
+).fit(X_train, y_train)
+
+fitted = {
+    "Median baseline": DummyRegressor(strategy="median").fit(X_train, y_train),
+    "Trend-only baseline": Detrended(DummyRegressor(strategy="constant", constant=0)).fit(X_train, y_train),
+    "Ridge regression": make_pipeline(linear_prep, RidgeCV(alphas=np.logspace(-2, 3, 20))).fit(X_train, y_train),
+    "Gradient boosting, raw target": search_raw.best_estimator_,
+    "Gradient boosting, detrended": search_detrended.best_estimator_,
+}
+print("detrended boosting, best params:",
+      {k.split("__")[-1]: v for k, v in search_detrended.best_params_.items()})
+```
+
+The test set mixes two very different populations. Most models report their
+parameter count. A minority do not, and those are mostly large closed models.
+So the scores are split by that.
+
+```{python}
+#| label: tbl-results
+#| tbl-cap: "Test error on models published from 2023 onwards. MAE is in orders of magnitude (log10 FLOP); 1.0 means a typical miss of 10x."
+known = X_test["log_params"].notna()
+
+def score(name, model):
+    err = np.abs(y_test - model.predict(X_test))
+    return {"model": name,
+            "MAE, all": round(err.mean(), 2),
+            f"MAE, params known (n={known.sum()})": round(err[known].mean(), 2),
+            f"MAE, params missing (n={(~known).sum()})": round(err[~known].mean(), 2),
+            "within 10x": f"{(err <= 1).mean():.0%}"}
+
+pd.DataFrame([score(name, m) for name, m in fitted.items()])
+```
+
+Both baselines matter. The median is useless because compute keeps growing,
+and the trend on its own does much better. Raw boosting comes out *worse than
+ridge regression* because it cannot extrapolate. Detrending fixes that. It gives
+the best overall score and the smallest error on the hard rows, and it ties ridge
+where parameters are known. The gap between the two MAE columns is the main
+result. When the parameter count is public, a typical miss is well under an
+order of magnitude. When it is hidden, the model misses by two or more.
+
+For comparison, on the test rows where it can be computed, the $6ND$ rule on its
+own:
+
+```{python}
+#| label: physics-baseline
+best = fitted["Gradient boosting, detrended"]
+has_6nd = X_test["log_6nd"].notna()
+err_6nd = np.abs(y_test[has_6nd] - X_test.loc[has_6nd, "log_6nd"])
+err_best = np.abs(y_test[has_6nd] - best.predict(X_test[has_6nd]))
+pd.DataFrame({"MAE (log10)": [err_6nd.mean(), err_best.mean()],
+              "within 10x": [(err_6nd <= 1).mean(), (err_best <= 1).mean()]},
+             index=[f"6ND rule (n={has_6nd.sum()})", "Detrended boosting, same rows"]).round(2)
+```
+
+## What the model relies on
+
+Permutation importance on the **test** set measures how much the error grows
+when one feature is shuffled. That shows what the model needs on data it has
+not seen, which the impurity scores computed during training cannot show.
+
+```{python}
+#| label: fig-importance
+#| fig-cap: "Permutation importance of each input for the detrended boosting model on the 2023+ test set (increase in MAE when the feature is shuffled; mean and standard deviation over 30 repeats)."
+imp = permutation_importance(best, X_test, y_test, scoring="neg_mean_absolute_error",
+                             n_repeats=30, random_state=0)
+order = np.argsort(imp.importances_mean)
+fig, ax = plt.subplots(figsize=(7, 3.8))
+ax.barh(np.array(X_test.columns)[order], imp.importances_mean[order],
+        xerr=imp.importances_std[order], color="#1b6ca8", alpha=0.85)
+ax.set_xlabel("Increase in test MAE (log10 FLOP)")
+plt.show()
+```
+
+Parameters and year carry almost all of the signal. The surprise is that
+`log_tokens` and `log_6nd` have *negative* importance. Shuffling them makes the
+test error **smaller**. The model learned how dataset size related to compute
+before 2023, and that relationship changed afterwards. Recent models are
+routinely trained on far more tokens per parameter than their predecessors, and
+the data-size field mixes tokens, words and images across domains. That is a
+concrete case of distribution shift, and it can be tested directly: refit the
+same pipeline without the two features and see whether the test error drops.
+
+```{python}
+#| label: ablation
+data_features = ["log_tokens", "log_6nd"]
+ablated = GridSearchCV(
+    Detrended(make_pipeline(
+        ColumnTransformer([
+            ("num", "passthrough", [c for c in numeric if c not in data_features]),
+            ("cat", OneHotEncoder(handle_unknown="ignore", min_frequency=5, sparse_output=False), categorical),
+        ]),
+        HistGradientBoostingRegressor(loss="absolute_error", random_state=0),
+    )),
+    {f"estimator__{k}": v for k, v in grid.items()},
+    cv=cv, scoring="neg_mean_absolute_error",
+).fit(X_train, y_train)
+
+pd.DataFrame([
+    {"features": "all", "CV MAE (train period)": -search_detrended.best_score_,
+     "test MAE": np.abs(y_test - best.predict(X_test)).mean()},
+    {"features": "without dataset size and 6ND", "CV MAE (train period)": -ablated.best_score_,
+     "test MAE": np.abs(y_test - ablated.predict(X_test)).mean()},
+]).round(2)
+```
+
+The two scores disagree, and that disagreement is the signature of the shift.
+Inside the training period, the dataset-size features help (CV MAE 1.07 vs
+1.12). On 2023+ models they hurt (test MAE 1.03 vs 0.92).
+
+This table is the honest version of feature selection. Cross-validation inside
+the training period is the only score that can pick features, because choosing
+by test score would leak the test set into the model. Test MAE is shown here to
+diagnose the shift, not to make the choice. I keep the full model as the main
+result, because it is the one the training-period evidence supports.
+
+## Where it fails
+
+Aggregate scores hide the cases that matter. Below, test error is broken down
+by Epoch's own confidence rating for each compute estimate, followed by the
+largest individual misses.
+
+```{python}
+#| label: error-analysis
+test_df = dl[test].assign(pred=best.predict(X_test), err=lambda d: np.log10(d["compute"]) - d["pred"])
+by_conf = (test_df.groupby("Confidence")["err"]
+           .agg(models="size", MAE=lambda e: e.abs().mean().round(2))
+           .reindex(["Confident", "Likely", "Speculative"]))
+display(by_conf)
+
+worst = (test_df.assign(abs_err=test_df["err"].abs())
+         .nlargest(6, "abs_err")
+         [["Model", "Organization", "params", "compute", "pred", "err"]]
+         .assign(compute=lambda d: d["compute"].map("{:.1e}".format),
+                 pred=lambda d: (10 ** d["pred"]).map("{:.1e}".format),
+                 params=lambda d: d["params"].map(lambda p: "not disclosed" if pd.isna(p) else f"{p:.1e}"),
+                 err=lambda d: d["err"].round(2))
+         .rename(columns={"compute": "actual FLOP", "pred": "predicted FLOP",
+                          "err": "error (log10)"}))
+worst
+```
+
+Errors grow steadily from "Confident" to "Speculative" labels. Part of what
+looks like model error is noise in the target itself.
+
+The largest misses fail in two opposite directions, and both come from the same
+cause. The year trend is a strong prior, and the model falls back on it when
+the size information is weak or missing.
+
+- **Under-prediction of flagship closed models** (GPT-4.5, Gemini 1.0 Ultra and
+  others). Their parameter count is not disclosed. This is **missing not at
+  random**: labs withhold size most often for their largest models, so median
+  imputation plus a missingness flag cannot recover information that was hidden
+  *because* it was large.
+- **Over-prediction of small specialised models** (a peptide model, a
+  57-thousand-parameter drone-racing controller, an audio model). Being published
+  after 2023 pulls the prediction toward the frontier, even when the model is tiny.
+
+Doing better would take signals from outside this table, such as API pricing,
+context length or benchmark scores for closed models, rather than a fancier
+algorithm.
+
+## What I found
+
+- **Training compute for notable models doubles about every 6 months**, and for
+  language models about every 5. The bootstrap intervals are tight. Per-chip
+  hardware in my [memory-wall post](../gpu-hardware-trends/index.qmd) doubles
+  about every 19 months, so most of the growth comes from larger clusters and
+  longer runs, not faster chips.
+- **$C \approx 6ND$ is a rough guide, not a law.** The typical language model
+  reports about 3× more compute than it predicts, and only about half land within
+  10×.
+- **Model choice has to match the extrapolation problem.** With a time-based
+  split, raw gradient boosting loses to ridge regression because trees cannot
+  extrapolate. Detrending turns it into the best model.
+- **The data-size features drifted.** They help in cross-validation before
+  2023 and hurt afterwards. Permutation importance on held-out data caught this,
+  and an ablation confirmed it.
+- **Missing data is the real ceiling.** When the parameter count is public, the
+  typical miss is well under 10×, and on rows where $6ND$ exists the model beats
+  the rule alone (MAE 0.74 vs 1.08). For flagship closed models it does not, and
+  the reason is *why* the data is missing, not the choice of algorithm.
+
+**Caveats.** The "notable" filter is Epoch's editorial choice, so this is not a
+random sample of all models. Many compute labels are themselves estimates, some
+built from $6ND$, which flatters the physics features. Speculative labels are the
+hardest to predict. Weighting training rows by label confidence is a natural next
+step.
