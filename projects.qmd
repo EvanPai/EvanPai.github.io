@@ -1,6 +1,6 @@
 ---
 title: "Projects"
-subtitle: "Selected work in ML systems, software engineering, and high-performance computing"
+subtitle: "Selected work in AI infrastructure, ML systems, and high-performance computing"
 toc: true
 toc-depth: 2
 ---
@@ -9,42 +9,64 @@ A few things explained properly, rather than a long list. Most of this work ran 
 multi-GPU clusters — for world-championship student cluster competitions, for
 industry partners, or as research and internship work.
 
-## Local LLM deployment and inference optimization
+## ML-based workload scheduler
 
-**The problem.** Serving a 70-billion-parameter model as an interactive chatbot is a
-systems problem, not a modelling one. Naive serving leaves most of the GPU idle
-between requests, and the model does not fit comfortably on one card regardless.
+*NTHU LSA Lab · industry–academia collaboration · 2022–2025*
 
-**What I did.** Engineered an end-to-end local chatbot around **LLaMA 3.1 70B**,
-served with **vLLM** behind a **Gradio** front end on 4 NVIDIA H100 GPUs, then went
-through the inference path properly — continuous batching, kernel-level tuning, and
-memory layout — measuring each change rather than stacking them and hoping.
+**The problem.** The lab ran a mix of CPU, NVIDIA GPU, and AMD GPU clusters, and jobs
+arrived without any hint of which hardware would suit them. Sending them blindly
+leaves expensive accelerators idle while other queues back up.
 
-**Outcome.** **3× throughput increase** over the baseline deployment, running
-entirely locally rather than against a hosted API.
+**What I did.** Built a scheduler that detects incoming workloads, profiles them
+ahead of time for duration and resource behaviour, and classifies them with
+**XGBoost** on system-level features. Each job is then dispatched to the CPU,
+NVIDIA, or AMD cluster that fits it, so the whole infrastructure stays busy. I also
+built XGBoost and LightGBM datasets and models that served as workloads for it.
 
-`LLaMA 3.1 70B` · `vLLM` · `Gradio` · `CUDA` · `4× H100` · `inference optimization`
+`XGBoost` · `LightGBM` · `feature engineering` · `job scheduling` · `heterogeneous clusters`
 
 ---
 
-## Industry collaboration: ROCm and AMD GPU evaluation
+## LLMs on AMD GPUs: ROCm porting and evaluation
 
-*Research lab industry–academia partnership · National Tsing Hua University · 2023–2025*
+*NTHU LSA Lab · industry–academia collaboration · 2022–2025*
 
-**The problem.** A partner company needed its workloads brought up and evaluated on
-**AMD GPUs under ROCm**, in an ecosystem far less forgiving than CUDA and with much
-thinner documentation.
+**The problem.** A partner company needed AMD GPU performance comparison, gap
+analysis, and porting research. Most LLM tooling assumes CUDA, and the ROCm
+ecosystem is far less forgiving and far less documented.
 
-**What I did.** Owned the engagement end to end as the engineer on it: brought up
-the ROCm software stack, ported and validated the workloads, designed and ran the
-experiments, and reported results in a form the company could actually act on. Close
-to a year of production-grade software engineering, deadlines and stakeholders
-included, rather than coursework.
+**What I did.** Ported LLM frameworks such as **vLLM** and **DeepSpeed** to **ROCm**.
+That meant real code changes, adapting CUDA-oriented API calls to their ROCm
+equivalents, plus a lot of build work: trying configurations and resolving version
+and dependency conflicts until everything compiled and ran. I then deployed
+**LLaMA 70B on AMD Instinct MI210 GPUs** and benchmarked vLLM, DeepSpeed, and
+quantization against NVIDIA baselines.
 
-**Outcome.** A working ROCm evaluation pipeline and a set of results the partner used
-directly — plus a hard-won view of what portability across GPU vendors really costs.
+**Outcome.** Working LLM deployments on AMD hardware and a comparison the partner
+could use, plus a hard-won view of what portability across GPU vendors really costs.
 
-`ROCm` · `AMD GPU` · `porting` · `benchmarking` · `industry delivery`
+`ROCm` · `AMD MI210` · `vLLM` · `DeepSpeed` · `quantization` · `porting` · `benchmarking`
+
+---
+
+## On-premise RAG system
+
+*NTHU LSA Lab · for the NTHU campus computer center and course labs*
+
+**The problem.** The campus computer center wanted an assistant that could answer
+questions about its own internal documents. Sending that data to a hosted API was not
+an option, and serving a 70-billion-parameter model locally is a systems problem:
+naive serving leaves most of the GPU idle between requests.
+
+**What I did.** Built a retrieval-augmented generation system around **LLaMA 3.1
+70B**, served with **vLLM** behind a **Gradio** front end on 4 NVIDIA H100 GPUs, so
+everything runs on-premise and confidential data never leaves campus. I then worked
+through the inference path, tuning batching and kernels and measuring each change
+rather than stacking them and hoping.
+
+**Outcome.** **3× throughput** over the baseline deployment, running entirely locally.
+
+`RAG` · `LLaMA 3.1 70B` · `vLLM` · `Gradio` · `4× H100` · `inference optimization`
 
 ---
 

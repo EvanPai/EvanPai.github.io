@@ -7,32 +7,38 @@ toc: true
 ## Background
 
 I grew up and studied in Taiwan, and finished a **Bachelor of Computer Science at
-National Tsing Hua University** in July 2025, graduating with a 3.97 GPA and ranked
-43rd of 183 in my class. I am now at UBC on a **CAD $10,000 Master of Data Science
-Scholarship**, awarded on the recommendation of the MDS Admissions Committee.
+National Tsing Hua University** in July 2025 with a 3.97/4.30 GPA. After graduating
+I completed Taiwan's mandatory military service, then prepared for the move to
+Canada. I am now at UBC on a **CAD $10,000 Master of Data Science Scholarship**,
+awarded on the recommendation of the MDS Admissions Committee, and graduate in June
+2027.
 
-My degree was a software engineering degree first. Operating systems, parallel
-programming, systems architecture — and then two years applying it, which is where
-most of what I know actually came from.
+My degree was a software engineering degree first: operating systems, parallel
+programming, computer architecture, compilers. Most of what I actually know,
+though, came from applying it.
 
-**Industry collaboration on AMD GPUs.** Through my third and fourth years I worked
-in a research lab on an industry–academia partnership, supporting a partner
-company's **ROCm and AMD GPU** experiments end to end: bringing up the software
-stack, porting and validating workloads, running the experiments, and reporting
-results the company could act on. Between that engagement and my internships, I came
-into MDS with roughly a year of real engineering experience rather than coursework
-alone.
+**LSA Lab, 2022–2025.** I joined NTHU's LSA Lab and its supercomputing team in my
+second year and stayed as a research assistant for three years, mostly on an
+industry–academia collaboration with a company that needed AMD GPU performance
+comparison, gap analysis, and porting research. My two main pieces of work were an
+**ML-based workload scheduler**, which profiles incoming jobs and uses an XGBoost
+classifier on system-level features to send each one to a CPU, NVIDIA, or AMD GPU
+cluster, and bringing **LLMs up on AMD GPUs**, which meant porting frameworks such as
+vLLM and DeepSpeed to ROCm, deploying LLaMA 70B on AMD Instinct MI210s, and
+benchmarking the results against NVIDIA.
 
-**Teaching.** From 2023 to 2025 I was a teaching assistant for four NTHU courses —
-Operating Systems, Parallel Programming, and both the fundamental and advanced High
-Performance Computing Cluster Practice courses. Two years of explaining schedulers,
-MPI, and GPU clusters to people seeing them for the first time. Teaching a thing is
-still the fastest way I know to find out whether I actually understand it.
+**Teaching.** From 2023 to 2025 I was a teaching assistant for four NTHU courses:
+Operating Systems, Parallel Programming, and the fundamental and advanced High
+Performance Computing Cluster Practice courses, each with more than 100 students. I
+taught lab sessions, held office hours, and designed lab assignments, including a
+CUDA Sobel edge-detection lab and a lab on porting CUDA code to AMD ROCm. Teaching a
+thing is still the fastest way I know to find out whether I actually understand it.
 
-**Internships.** A summer as a **Data Scientist at IBM** in Taipei, and a summer as a
-**Software Engineer at the National Center for High-performance Computing**, where I
-built a data re-uploading classifier using quantum machine learning methods in
-PennyLane.
+**Internships.** A summer as a **Data Scientist intern at IBM** in Taipei (2024),
+building models on internal business data and integrating them into internal
+applications, and a summer as a **Software Engineer intern at Taiwan's National
+Center for High-performance Computing** (2023), where I built a data re-uploading
+classifier with quantum machine learning methods in PennyLane.
 
 ## Why data science
 
@@ -68,8 +74,8 @@ but someone genuinely strong at each:
 
 These are usually the same problem and rarely the same person. A model that cannot
 be served is a paper; a serving stack around a model nobody validated is a liability.
-I have spent four years on the second half at a level most people do not reach, and
-MDS is where I bring the first half up to match it.
+I have spent my undergraduate years on the second half, and MDS is where I bring the
+first half up to match it.
 
 ## Competing on the world stage
 
@@ -122,19 +128,20 @@ DOI: [10.1109/TPDS.2025.3627428](https://doi.org/10.1109/TPDS.2025.3627428)
 
 ## What I work with
 
-**Languages** — Python, C/C++, R, SQL, shell scripting
+**Languages**: Python, C/C++, Bash, R, SQL
 
-**Software engineering** — Linux, Git, Docker and containerization, virtualization,
-system design, performance profiling, testing and reproducible workflows, MLOps
+**AI systems and HPC**: CUDA, ROCm, NCCL, MPI, OpenMP, TensorRT, vLLM, DeepSpeed,
+quantization, tensor parallelism, LLM inference optimization, profiling with Nsight
+and nvprof, NVIDIA H100 and AMD MI210 clusters
 
-**AI and LLM systems** — PyTorch, TensorFlow, HuggingFace, vLLM, DeepSpeed,
-TensorRT, inference optimization, transformer architectures, RAG
+**Machine learning**: PyTorch, TensorFlow, Hugging Face, XGBoost, LightGBM,
+scikit-learn, RAG, feature engineering, cross-validation
 
-**HPC and GPU** — CUDA, ROCm, NCCL, MPI, OpenMP, parallel programming, multi-node
-training, cluster management, Nsight and nvprof profiling
+**Data science**: pandas, NumPy, statistical inference, regression, experiment
+design, data visualization, Jupyter, Quarto
 
-**Data science** — machine learning, statistical inference, experiment design, data
-visualization, Quarto and reproducible reporting
+**Software engineering**: Linux, Git and GitHub, Docker, object-oriented design,
+CI/CD, AWS
 
 R and the statistical half of this list are the newest parts, and they are what MDS
 is adding. I update this section as the program goes rather than listing things I
@@ -142,11 +149,14 @@ have only read about.
 
 ## Where I am headed
 
-I am looking for **machine learning engineer**, **data scientist**, and **software
-engineering** roles — anywhere the same person is trusted to frame the question,
-build the model, and own it in production. My engineering credentials are the part
-of my background that is already proven at an international level; MDS is what makes
-me equally credible on the modelling and inference side.
+I am looking for **full-time new-grad roles starting in mid-2027**, after MDS ends
+in June. Vancouver comes first, then the rest of Canada. The roles I want most are
+in **AI infrastructure and ML systems** (inference and training performance, GPU
+software, ML platforms), followed by **machine learning engineering**, **software
+engineering**, and **data science**. In all of them I want to be the person trusted
+to frame the question, build the model, and own it in production. My engineering
+side has already been tested at an international level, and MDS is what makes the
+modelling and inference side just as credible.
 
 ## Outside of work
 

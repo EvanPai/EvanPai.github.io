@@ -1,6 +1,6 @@
 ---
 title: "Evan Pai"
-subtitle: "Master of Data Science student at UBC · ML systems, software engineering, and high-performance computing"
+subtitle: "Master of Data Science student at UBC · AI infrastructure, ML systems, and GPU software"
 image: images/profile.jpg
 toc: false
 about:
@@ -21,31 +21,31 @@ about:
 
 ## Hello
 
-I am a Master of Data Science student at the University of British Columbia, here on
-a **CAD $10,000 MDS Scholarship**. I came from computer science at National Tsing
-Hua University in Taiwan, where I spent four years as a software engineer working at
-the hardest end of machine learning infrastructure: making very large models run on
-GPU clusters, and teaching other students how to do it.
+I am a Master of Data Science student at the University of British Columbia
+(graduating June 2027), here on a **CAD $10,000 MDS Scholarship**. Before that I
+studied computer science at National Tsing Hua University in Taiwan, where I spent
+three years in the LSA Lab working on AI infrastructure: getting large models to run
+well on GPU clusters, on both NVIDIA and AMD hardware.
 
-That work put me on the floor at the world's top supercomputing competitions. My
-teams took **1st place at the 2023 APAC HPC-AI Competition in Australia**, **2nd at ISC High
-Performance 2024** in Germany, and **3rd at SC24** in America — three of the most
-competitive HPC-AI events in the world, where fewer than twenty teams are selected
-from a global applicant pool to compete in person. Along the way we made BLOOM
-inference 11.4× faster, a CFD solver 18.5× faster, and a 70B-parameter chatbot serve
-3× the throughput.
+In the lab I built an **ML-based workload scheduler** that profiles incoming jobs and
+uses an XGBoost classifier to route each one to a CPU, NVIDIA, or AMD GPU cluster. I
+also ported LLM frameworks such as vLLM and DeepSpeed to **ROCm** so we could run
+**LLaMA 70B on AMD MI210 GPUs**, and I built an **on-premise RAG system** for the
+campus computer center that tripled serving throughput on 4 H100s.
 
-Then I spent a summer as a **Data Scientist at IBM**, watching models meet the real
-world, and it reframed everything. My understanding of AI was almost entirely
-system-side: throughput, kernels, parallelism, deployment. The modelling half — the
-part that decides whether a result is worth deploying at all — I had only ever
-picked up in passing. **MDS is me completing that half deliberately.**
+The same work took me to the world's top student supercomputing competitions. My
+teams took **1st place at the APAC HPC-AI Competition** in Sydney, **2nd at ISC High
+Performance 2024** in Hamburg, and **3rd at SC24** in Atlanta. Along the way we made
+BLOOM inference 11.4× faster and a CFD solver 18.5× faster, and our SC24
+reproducibility work became a paper in *IEEE TPDS*.
 
-What I am building toward is a full-stack ML engineer: someone who can take a
-problem through model development, training, and evaluation *and* through the
-acceleration, deployment, and pipeline work that gets it into production — because
-those are usually the same problem, and they are rarely the same person.
+A summer as a **Data Scientist intern at IBM** showed me the other half of the job:
+deciding whether a model is worth deploying at all. Most of what I knew about AI was
+on the systems side, so MDS is where I am deliberately building the modelling and
+statistics side to match.
 
-I am looking for **machine learning engineer**, **data scientist**, and **software
-engineering** roles. More on the [about page](about.qmd), my work is on
-[projects](projects.qmd), and I write about the program on the [blog](blog.qmd).
+I am looking for **full-time new-grad roles starting in 2027**, in Vancouver or
+elsewhere in Canada, in **AI infrastructure / ML systems**, **machine learning
+engineering**, **software engineering**, and **data science**. More on the
+[about page](about.qmd), my work is on [projects](projects.qmd), and I write about
+the program on the [blog](blog.qmd).

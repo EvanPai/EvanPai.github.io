@@ -81,7 +81,7 @@ ul.task-list li input[type="checkbox"] {
 
 <link rel="stylesheet" href="styles.css">
 <meta property="og:title" content="Projects – Evan Pai">
-<meta property="og:description" content="Selected work in ML systems, software engineering, and high-performance computing">
+<meta property="og:description" content="Selected work in AI infrastructure, ML systems, and high-performance computing">
 <meta property="og:image" content="https://evanpai.github.io/images/competitions/sc24-team-cluster.jpg">
 <meta property="og:site_name" content="Evan Pai">
 <meta property="og:image:alt" content="The NTHU student cluster competition team standing with their cluster on the SC24 floor in Atlanta">
@@ -148,8 +148,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul class="collapse">
-  <li><a href="#local-llm-deployment-and-inference-optimization" id="toc-local-llm-deployment-and-inference-optimization" class="nav-link active" data-scroll-target="#local-llm-deployment-and-inference-optimization">Local LLM deployment and inference optimization</a></li>
-  <li><a href="#industry-collaboration-rocm-and-amd-gpu-evaluation" id="toc-industry-collaboration-rocm-and-amd-gpu-evaluation" class="nav-link" data-scroll-target="#industry-collaboration-rocm-and-amd-gpu-evaluation">Industry collaboration: ROCm and AMD GPU evaluation</a></li>
+  <li><a href="#ml-based-workload-scheduler" id="toc-ml-based-workload-scheduler" class="nav-link active" data-scroll-target="#ml-based-workload-scheduler">ML-based workload scheduler</a></li>
+  <li><a href="#llms-on-amd-gpus-rocm-porting-and-evaluation" id="toc-llms-on-amd-gpus-rocm-porting-and-evaluation" class="nav-link" data-scroll-target="#llms-on-amd-gpus-rocm-porting-and-evaluation">LLMs on AMD GPUs: ROCm porting and evaluation</a></li>
+  <li><a href="#on-premise-rag-system" id="toc-on-premise-rag-system" class="nav-link" data-scroll-target="#on-premise-rag-system">On-premise RAG system</a></li>
   <li><a href="#sc24-student-cluster-competition-3rd-place" id="toc-sc24-student-cluster-competition-3rd-place" class="nav-link" data-scroll-target="#sc24-student-cluster-competition-3rd-place">SC24 Student Cluster Competition — 3rd place 🥉</a></li>
   <li><a href="#isc-high-performance-scc-2024-2nd-place" id="toc-isc-high-performance-scc-2024-2nd-place" class="nav-link" data-scroll-target="#isc-high-performance-scc-2024-2nd-place">ISC High Performance SCC 2024 — 2nd place 🥈</a></li>
   <li><a href="#apac-hpc-ai-competition-2023-1st-place" id="toc-apac-hpc-ai-competition-2023-1st-place" class="nav-link" data-scroll-target="#apac-hpc-ai-competition-2023-1st-place">APAC HPC-AI Competition 2023 — 1st place 🥇</a></li>
@@ -165,7 +166,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Projects</h1>
-<p class="subtitle lead">Selected work in ML systems, software engineering, and high-performance computing</p>
+<p class="subtitle lead">Selected work in AI infrastructure, ML systems, and high-performance computing</p>
 </div>
 
 
@@ -183,21 +184,30 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p>A few things explained properly, rather than a long list. Most of this work ran on multi-GPU clusters — for world-championship student cluster competitions, for industry partners, or as research and internship work.</p>
-<section id="local-llm-deployment-and-inference-optimization" class="level2">
-<h2 class="anchored" data-anchor-id="local-llm-deployment-and-inference-optimization">Local LLM deployment and inference optimization</h2>
-<p><strong>The problem.</strong> Serving a 70-billion-parameter model as an interactive chatbot is a systems problem, not a modelling one. Naive serving leaves most of the GPU idle between requests, and the model does not fit comfortably on one card regardless.</p>
-<p><strong>What I did.</strong> Engineered an end-to-end local chatbot around <strong>LLaMA 3.1 70B</strong>, served with <strong>vLLM</strong> behind a <strong>Gradio</strong> front end on 4 NVIDIA H100 GPUs, then went through the inference path properly — continuous batching, kernel-level tuning, and memory layout — measuring each change rather than stacking them and hoping.</p>
-<p><strong>Outcome.</strong> <strong>3× throughput increase</strong> over the baseline deployment, running entirely locally rather than against a hosted API.</p>
-<p><code>LLaMA 3.1 70B</code> · <code>vLLM</code> · <code>Gradio</code> · <code>CUDA</code> · <code>4× H100</code> · <code>inference optimization</code></p>
+<section id="ml-based-workload-scheduler" class="level2">
+<h2 class="anchored" data-anchor-id="ml-based-workload-scheduler">ML-based workload scheduler</h2>
+<p><em>NTHU LSA Lab · industry–academia collaboration · 2022–2025</em></p>
+<p><strong>The problem.</strong> The lab ran a mix of CPU, NVIDIA GPU, and AMD GPU clusters, and jobs arrived without any hint of which hardware would suit them. Sending them blindly leaves expensive accelerators idle while other queues back up.</p>
+<p><strong>What I did.</strong> Built a scheduler that detects incoming workloads, profiles them ahead of time for duration and resource behaviour, and classifies them with <strong>XGBoost</strong> on system-level features. Each job is then dispatched to the CPU, NVIDIA, or AMD cluster that fits it, so the whole infrastructure stays busy. I also built XGBoost and LightGBM datasets and models that served as workloads for it.</p>
+<p><code>XGBoost</code> · <code>LightGBM</code> · <code>feature engineering</code> · <code>job scheduling</code> · <code>heterogeneous clusters</code></p>
 <hr>
 </section>
-<section id="industry-collaboration-rocm-and-amd-gpu-evaluation" class="level2">
-<h2 class="anchored" data-anchor-id="industry-collaboration-rocm-and-amd-gpu-evaluation">Industry collaboration: ROCm and AMD GPU evaluation</h2>
-<p><em>Research lab industry–academia partnership · National Tsing Hua University · 2023–2025</em></p>
-<p><strong>The problem.</strong> A partner company needed its workloads brought up and evaluated on <strong>AMD GPUs under ROCm</strong>, in an ecosystem far less forgiving than CUDA and with much thinner documentation.</p>
-<p><strong>What I did.</strong> Owned the engagement end to end as the engineer on it: brought up the ROCm software stack, ported and validated the workloads, designed and ran the experiments, and reported results in a form the company could actually act on. Close to a year of production-grade software engineering, deadlines and stakeholders included, rather than coursework.</p>
-<p><strong>Outcome.</strong> A working ROCm evaluation pipeline and a set of results the partner used directly — plus a hard-won view of what portability across GPU vendors really costs.</p>
-<p><code>ROCm</code> · <code>AMD GPU</code> · <code>porting</code> · <code>benchmarking</code> · <code>industry delivery</code></p>
+<section id="llms-on-amd-gpus-rocm-porting-and-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="llms-on-amd-gpus-rocm-porting-and-evaluation">LLMs on AMD GPUs: ROCm porting and evaluation</h2>
+<p><em>NTHU LSA Lab · industry–academia collaboration · 2022–2025</em></p>
+<p><strong>The problem.</strong> A partner company needed AMD GPU performance comparison, gap analysis, and porting research. Most LLM tooling assumes CUDA, and the ROCm ecosystem is far less forgiving and far less documented.</p>
+<p><strong>What I did.</strong> Ported LLM frameworks such as <strong>vLLM</strong> and <strong>DeepSpeed</strong> to <strong>ROCm</strong>. That meant real code changes, adapting CUDA-oriented API calls to their ROCm equivalents, plus a lot of build work: trying configurations and resolving version and dependency conflicts until everything compiled and ran. I then deployed <strong>LLaMA 70B on AMD Instinct MI210 GPUs</strong> and benchmarked vLLM, DeepSpeed, and quantization against NVIDIA baselines.</p>
+<p><strong>Outcome.</strong> Working LLM deployments on AMD hardware and a comparison the partner could use, plus a hard-won view of what portability across GPU vendors really costs.</p>
+<p><code>ROCm</code> · <code>AMD MI210</code> · <code>vLLM</code> · <code>DeepSpeed</code> · <code>quantization</code> · <code>porting</code> · <code>benchmarking</code></p>
+<hr>
+</section>
+<section id="on-premise-rag-system" class="level2">
+<h2 class="anchored" data-anchor-id="on-premise-rag-system">On-premise RAG system</h2>
+<p><em>NTHU LSA Lab · for the NTHU campus computer center and course labs</em></p>
+<p><strong>The problem.</strong> The campus computer center wanted an assistant that could answer questions about its own internal documents. Sending that data to a hosted API was not an option, and serving a 70-billion-parameter model locally is a systems problem: naive serving leaves most of the GPU idle between requests.</p>
+<p><strong>What I did.</strong> Built a retrieval-augmented generation system around <strong>LLaMA 3.1 70B</strong>, served with <strong>vLLM</strong> behind a <strong>Gradio</strong> front end on 4 NVIDIA H100 GPUs, so everything runs on-premise and confidential data never leaves campus. I then worked through the inference path, tuning batching and kernels and measuring each change rather than stacking them and hoping.</p>
+<p><strong>Outcome.</strong> <strong>3× throughput</strong> over the baseline deployment, running entirely locally.</p>
+<p><code>RAG</code> · <code>LLaMA 3.1 70B</code> · <code>vLLM</code> · <code>Gradio</code> · <code>4× H100</code> · <code>inference optimization</code></p>
 <hr>
 </section>
 <section id="sc24-student-cluster-competition-3rd-place" class="level2">

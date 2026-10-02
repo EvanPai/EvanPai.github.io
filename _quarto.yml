@@ -4,7 +4,7 @@ project:
 
 website:
   title: "Evan Pai"
-  description: "Personal website and portfolio of Evan Pai — Master of Data Science student at UBC, working across ML modelling, software engineering, LLM inference, and high-performance computing."
+  description: "Personal website and portfolio of Evan Pai — Master of Data Science student at UBC working on AI infrastructure, ML systems, LLM inference, and GPU software."
   site-url: https://evanpai.github.io
   navbar:
     left:

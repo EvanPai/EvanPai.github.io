@@ -186,11 +186,11 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>I grew up and studied in Taiwan, and finished a <strong>Bachelor of Computer Science at National Tsing Hua University</strong> in July 2025, graduating with a 3.97 GPA and ranked 43rd of 183 in my class. I am now at UBC on a <strong>CAD $10,000 Master of Data Science Scholarship</strong>, awarded on the recommendation of the MDS Admissions Committee.</p>
-<p>My degree was a software engineering degree first. Operating systems, parallel programming, systems architecture — and then two years applying it, which is where most of what I know actually came from.</p>
-<p><strong>Industry collaboration on AMD GPUs.</strong> Through my third and fourth years I worked in a research lab on an industry–academia partnership, supporting a partner company’s <strong>ROCm and AMD GPU</strong> experiments end to end: bringing up the software stack, porting and validating workloads, running the experiments, and reporting results the company could act on. Between that engagement and my internships, I came into MDS with roughly a year of real engineering experience rather than coursework alone.</p>
-<p><strong>Teaching.</strong> From 2023 to 2025 I was a teaching assistant for four NTHU courses — Operating Systems, Parallel Programming, and both the fundamental and advanced High Performance Computing Cluster Practice courses. Two years of explaining schedulers, MPI, and GPU clusters to people seeing them for the first time. Teaching a thing is still the fastest way I know to find out whether I actually understand it.</p>
-<p><strong>Internships.</strong> A summer as a <strong>Data Scientist at IBM</strong> in Taipei, and a summer as a <strong>Software Engineer at the National Center for High-performance Computing</strong>, where I built a data re-uploading classifier using quantum machine learning methods in PennyLane.</p>
+<p>I grew up and studied in Taiwan, and finished a <strong>Bachelor of Computer Science at National Tsing Hua University</strong> in July 2025 with a 3.97/4.30 GPA. After graduating I completed Taiwan’s mandatory military service, then prepared for the move to Canada. I am now at UBC on a <strong>CAD $10,000 Master of Data Science Scholarship</strong>, awarded on the recommendation of the MDS Admissions Committee, and graduate in June 2027.</p>
+<p>My degree was a software engineering degree first: operating systems, parallel programming, computer architecture, compilers. Most of what I actually know, though, came from applying it.</p>
+<p><strong>LSA Lab, 2022–2025.</strong> I joined NTHU’s LSA Lab and its supercomputing team in my second year and stayed as a research assistant for three years, mostly on an industry–academia collaboration with a company that needed AMD GPU performance comparison, gap analysis, and porting research. My two main pieces of work were an <strong>ML-based workload scheduler</strong>, which profiles incoming jobs and uses an XGBoost classifier on system-level features to send each one to a CPU, NVIDIA, or AMD GPU cluster, and bringing <strong>LLMs up on AMD GPUs</strong>, which meant porting frameworks such as vLLM and DeepSpeed to ROCm, deploying LLaMA 70B on AMD Instinct MI210s, and benchmarking the results against NVIDIA.</p>
+<p><strong>Teaching.</strong> From 2023 to 2025 I was a teaching assistant for four NTHU courses: Operating Systems, Parallel Programming, and the fundamental and advanced High Performance Computing Cluster Practice courses, each with more than 100 students. I taught lab sessions, held office hours, and designed lab assignments, including a CUDA Sobel edge-detection lab and a lab on porting CUDA code to AMD ROCm. Teaching a thing is still the fastest way I know to find out whether I actually understand it.</p>
+<p><strong>Internships.</strong> A summer as a <strong>Data Scientist intern at IBM</strong> in Taipei (2024), building models on internal business data and integrating them into internal applications, and a summer as a <strong>Software Engineer intern at Taiwan’s National Center for High-performance Computing</strong> (2023), where I built a data re-uploading classifier with quantum machine learning methods in PennyLane.</p>
 </section>
 <section id="why-data-science" class="level2">
 <h2 class="anchored" data-anchor-id="why-data-science">Why data science</h2>
@@ -206,7 +206,7 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>The model side</strong> — framing the problem, designing and training the model, validating it honestly, and knowing what the result does and does not support.</li>
 <li><strong>The systems side</strong> — acceleration, distributed training, inference optimization, deployment, and the data and serving pipelines around it.</li>
 </ul>
-<p>These are usually the same problem and rarely the same person. A model that cannot be served is a paper; a serving stack around a model nobody validated is a liability. I have spent four years on the second half at a level most people do not reach, and MDS is where I bring the first half up to match it.</p>
+<p>These are usually the same problem and rarely the same person. A model that cannot be served is a paper; a serving stack around a model nobody validated is a liability. I have spent my undergraduate years on the second half, and MDS is where I bring the first half up to match it.</p>
 </section>
 <section id="competing-on-the-world-stage" class="level2">
 <h2 class="anchored" data-anchor-id="competing-on-the-world-stage">Competing on the world stage</h2>
@@ -284,16 +284,16 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="what-i-work-with" class="level2">
 <h2 class="anchored" data-anchor-id="what-i-work-with">What I work with</h2>
-<p><strong>Languages</strong> — Python, C/C++, R, SQL, shell scripting</p>
-<p><strong>Software engineering</strong> — Linux, Git, Docker and containerization, virtualization, system design, performance profiling, testing and reproducible workflows, MLOps</p>
-<p><strong>AI and LLM systems</strong> — PyTorch, TensorFlow, HuggingFace, vLLM, DeepSpeed, TensorRT, inference optimization, transformer architectures, RAG</p>
-<p><strong>HPC and GPU</strong> — CUDA, ROCm, NCCL, MPI, OpenMP, parallel programming, multi-node training, cluster management, Nsight and nvprof profiling</p>
-<p><strong>Data science</strong> — machine learning, statistical inference, experiment design, data visualization, Quarto and reproducible reporting</p>
+<p><strong>Languages</strong>: Python, C/C++, Bash, R, SQL</p>
+<p><strong>AI systems and HPC</strong>: CUDA, ROCm, NCCL, MPI, OpenMP, TensorRT, vLLM, DeepSpeed, quantization, tensor parallelism, LLM inference optimization, profiling with Nsight and nvprof, NVIDIA H100 and AMD MI210 clusters</p>
+<p><strong>Machine learning</strong>: PyTorch, TensorFlow, Hugging Face, XGBoost, LightGBM, scikit-learn, RAG, feature engineering, cross-validation</p>
+<p><strong>Data science</strong>: pandas, NumPy, statistical inference, regression, experiment design, data visualization, Jupyter, Quarto</p>
+<p><strong>Software engineering</strong>: Linux, Git and GitHub, Docker, object-oriented design, CI/CD, AWS</p>
 <p>R and the statistical half of this list are the newest parts, and they are what MDS is adding. I update this section as the program goes rather than listing things I have only read about.</p>
 </section>
 <section id="where-i-am-headed" class="level2">
 <h2 class="anchored" data-anchor-id="where-i-am-headed">Where I am headed</h2>
-<p>I am looking for <strong>machine learning engineer</strong>, <strong>data scientist</strong>, and <strong>software engineering</strong> roles — anywhere the same person is trusted to frame the question, build the model, and own it in production. My engineering credentials are the part of my background that is already proven at an international level; MDS is what makes me equally credible on the modelling and inference side.</p>
+<p>I am looking for <strong>full-time new-grad roles starting in mid-2027</strong>, after MDS ends in June. Vancouver comes first, then the rest of Canada. The roles I want most are in <strong>AI infrastructure and ML systems</strong> (inference and training performance, GPU software, ML platforms), followed by <strong>machine learning engineering</strong>, <strong>software engineering</strong>, and <strong>data science</strong>. In all of them I want to be the person trusted to frame the question, build the model, and own it in production. My engineering side has already been tested at an international level, and MDS is what makes the modelling and inference side just as credible.</p>
 </section>
 <section id="outside-of-work" class="level2">
 <h2 class="anchored" data-anchor-id="outside-of-work">Outside of work</h2>
