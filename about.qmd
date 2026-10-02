@@ -150,7 +150,7 @@ have only read about.
 ## Where I am headed
 
 I am looking for **full-time new-grad roles starting in mid-2027**, after MDS ends
-in June. Vancouver comes first, then the rest of Canada. The roles I want most are
+in June. I am open to Vancouver, Seattle, the San Francisco Bay Area, and remote work. The roles I want most are
 in **AI infrastructure and ML systems** (inference and training performance, GPU
 software, ML platforms), followed by **machine learning engineering**, **software
 engineering**, and **data science**. In all of them I want to be the person trusted

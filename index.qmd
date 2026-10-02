@@ -47,8 +47,8 @@ deciding whether a model is worth deploying at all. Most of what I knew about AI
 on the systems side, so MDS is where I am deliberately building the modelling and
 statistics side to match.
 
-I am looking for **full-time new-grad roles starting in 2027**, in Vancouver or
-elsewhere in Canada, in **AI infrastructure / ML systems**, **machine learning
+I am looking for **full-time new-grad roles starting in 2027**, in Vancouver, Seattle,
+the San Francisco Bay Area, or remote, in **AI infrastructure / ML systems**, **machine learning
 engineering**, **software engineering**, and **data science**. More on the
 [about page](about.qmd), my work is on [projects](projects.qmd), my [resume is here](files/EvanPai_Resume.pdf), and I write about
 the program on the [blog](blog.qmd).
