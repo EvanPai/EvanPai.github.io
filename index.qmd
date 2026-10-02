@@ -14,6 +14,9 @@ about:
     - icon: linkedin
       text: LinkedIn
       href: https://www.linkedin.com/in/evanpai/
+    - icon: file-earmark-text
+      text: Resume
+      href: files/EvanPai_Resume.pdf
     - icon: envelope
       text: Email
       href: mailto:evan105pai@gmail.com
@@ -47,5 +50,5 @@ statistics side to match.
 I am looking for **full-time new-grad roles starting in 2027**, in Vancouver or
 elsewhere in Canada, in **AI infrastructure / ML systems**, **machine learning
 engineering**, **software engineering**, and **data science**. More on the
-[about page](about.qmd), my work is on [projects](projects.qmd), and I write about
+[about page](about.qmd), my work is on [projects](projects.qmd), my [resume is here](files/EvanPai_Resume.pdf), and I write about
 the program on the [blog](blog.qmd).

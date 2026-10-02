@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: docs
+  resources:
+    - files/EvanPai_Resume.pdf
 
 website:
   title: "Evan Pai"
@@ -16,6 +18,8 @@ website:
         text: Blog
       - href: projects.qmd
         text: Projects
+      - href: files/EvanPai_Resume.pdf
+        text: Resume
     right:
       - icon: github
         href: https://github.com/EvanPai
